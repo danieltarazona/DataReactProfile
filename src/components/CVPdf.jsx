@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: FONT_SIZE,
     fontWeight: 'bold',
-    textTransform: 'uppercase',
   },
   itemSubtitle: {
     fontSize: FONT_SIZE,
@@ -106,9 +105,9 @@ const CVPdf = ({ data }) => (
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <Text style={styles.name}>{data.header.name}</Text>
-        {/*<Text style={styles.title}>{data.header.title}</Text>*/}
+        <Text style={styles.title}>{data.header.title}</Text>
         <Text style={styles.contact}>
-          {data.header.location} * {data.header.email} * {data.header.phone} * {data.header.github}
+          {data.header.location} • {data.header.email} • {data.header.phone} • {data.header.github}
         </Text>
       </View>
 
@@ -131,15 +130,12 @@ const CVPdf = ({ data }) => (
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Technical Skills & Projects</Text>
-        <View style={styles.skillsListSection}>  
-          <Text style={styles.skillsList}>
-            <Text style={{ fontWeight: 'bold' }}>Programming:</Text> {data.skills.programming}
-          </Text>
-          <Text style={styles.skillsList}>
-            <Text style={{ fontWeight: 'bold' }}>Design:</Text> {data.skills.design}
-          </Text>
-        </View>
-        
+        <Text style={styles.skillsList}>
+          <Text style={{ fontWeight: 'bold' }}>Programming:</Text> {data.skills.programming}
+        </Text>
+        <Text style={styles.skillsList}>
+          <Text style={{ fontWeight: 'bold' }}>Design:</Text> {data.skills.design}
+        </Text>
         {data.skills.projects.map((proj, index) => (
           <View key={index} style={styles.item}>
             <View style={styles.row}>
@@ -181,6 +177,20 @@ const CVPdf = ({ data }) => (
               <Text style={styles.itemDate}>{lead.date}</Text>
             </View>
             {renderDescription(lead.description)}
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Certificates</Text>
+        {data.certificates.map((cert, index) => (
+          <View key={index} style={styles.item}>
+            <View style={styles.row}>
+              <Text style={styles.itemTitle}>{cert.name}</Text>
+              <Text style={styles.itemDate}>{cert.date}</Text>
+            </View>
+            <Text style={styles.itemSubtitle}>{cert.issuer}</Text>
+            {renderDescription(cert.description)}
           </View>
         ))}
       </View>

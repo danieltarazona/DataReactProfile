@@ -4,88 +4,9 @@ import MDEditor from '@uiw/react-md-editor';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer'; // Added PDFViewer
 import CVPdf from './components/CVPdf.jsx';
 import './index.css';
-
-const initialData = {
-  header: {
-    name: 'Daniel Tarazona',
-    title: 'Senior iOS Developer',
-    location: 'Medellin, Colombia',
-    email: 'shiftcipher@hotmail.com',
-    phone: '+57 315 837 5156',
-    github: 'https://github.com/danieltarazona',
-  },
-  education: [
-    {
-      institution: 'HARVARD UNIVERSITY',
-      location: 'Cambridge, MA',
-      degree: 'AB in Computer Science, GPA: 3.55/4.0',
-      date: 'May 2026',
-      coursework: 'Relevant Coursework: Systems Programming, Data Structures and Algorithms, Artificial Intelligence, Introduction to Probability, Multivariable Calculus',
-    },
-    {
-      institution: 'IRVINE HIGH SCHOOL',
-      location: 'Irvine, CA',
-      degree: 'High School Diploma, SAT I: M-780 V-760',
-      date: 'June 2022',
-      coursework: 'National Merit Scholar Finalist, Member of Varsity Lacrosse Team.',
-    },
-  ],
-  skills: {
-    programming: 'C, C++, C#, SQL, Python, MATLAB, JavaScript, OCaml.',
-    design: 'Wix, Adobe XD, Figma.',
-    projects: [
-      {
-        name: 'Firewall Network: CS 145 Final Project',
-        date: 'Jan. 2024 - May 2025',
-        description: 'Implemented a basic rule-based firewall for programmable network switches using the P4 programming domain-specific language. Allows user to block network traffic based on 5-tuple, including variable-length ranges of IP addresses.',
-      },
-      {
-        name: 'Image Generation Add On: CS 50 Final Project',
-        date: 'Sept. 2022 - Dec. 2023',
-        description: 'Created a Google Chrome extension that allows users to replace the images on websites they visit with pictures of animals. Implemented using a combination of HTML, CSS, and JavaScript.',
-      },
-    ],
-  },
-  experience: [
-    {
-      company: 'MICROSOFT',
-      role: 'Software Engineering Intern',
-      date: 'June - August 2025',
-      description: 'Designed and implemented a productivity add-on for Office using C# and VSTO in .NET framework to automate and synchronize activity reporting. Created testing and demonstration suites for software.',
-      location: 'New York, NY',
-    },
-    {
-      company: 'HARVARD UNIVERSITY',
-      role: 'Teaching Fellow, Introduction to Computer Science',
-      date: 'September 2024 - May 2025',
-      description: 'Taught class of 21 students to program in C, PHP, JavaScript, and object-oriented concepts. Maintained weekly office hours and problem-solving sessions. Graded problem sets and exams.',
-      location: 'Cambridge, MA',
-    },
-    {
-      company: 'TECH HILLS',
-      role: 'Technology Intern',
-      date: 'June - August 2024',
-      description: 'Implemented new web site including back-end database storage system and dynamic web pages. Developed and conducted usability tests, implementing enhancements to improve user experience.',
-      location: 'Laguna Hills, CA',
-    },
-  ],
-  leadership: [
-    {
-      organization: 'HARVARD WOMEN IN COMPUTER SCIENCE',
-      role: 'Mentorships Co-director / Board Member',
-      date: 'January 2024 - Present',
-      description: 'Organized outreach campaign, resulting in a 20% increase in alumni mentors in the matching database. Coordinated tech networking night for thirty professionals and 75 students. Upgraded and enhanced website using Wix.',
-      location: 'Cambridge, MA',
-    },
-    {
-      organization: 'HARVARD COLLEGE MARATHON CHALLENGE',
-      role: 'Training Program Director',
-      date: 'January - May 2023',
-      description: 'Developed training program for 25 charity runners. Raised over $25,000 to support Phillips Brooks House Association and The Cambridge Food Project.',
-      location: 'Cambridge, MA',
-    },
-  ],
-};
+import { useEffect } from 'react';
+import CVPreview from './components/CVPreview.jsx';
+import initialData from './data.jsx';
 
 function App() {
   const [data, setData] = useState(initialData);
@@ -149,10 +70,8 @@ function App() {
   return (
     <div className="app">
       <div className="editor">
-        <h1>CV Manager</h1>
-        <h2>Edit Sections</h2>
+        <h1>Data Profile</h1>
         
-        {/* Header Editor */}
         <section>
           <h3>Header</h3>
           <input
@@ -193,7 +112,6 @@ function App() {
           />
         </section>
 
-        {/* Education Editor */}
         <section>
           <h3>Education</h3>
           {data.education.map((edu, index) => (
@@ -233,7 +151,6 @@ function App() {
           <button onClick={() => addItem('education')}>Add Education</button>
         </section>
 
-        {/* Skills & Projects Editor */}
         <section>
           <h3>Skills & Projects</h3>
           <input
@@ -273,7 +190,6 @@ function App() {
           <button onClick={addProject}>Add Project</button>
         </section>
 
-        {/* Experience Editor */}
         <section>
           <h3>Experience</h3>
           {data.experience.map((exp, index) => (
@@ -313,7 +229,6 @@ function App() {
           <button onClick={() => addItem('experience')}>Add Experience</button>
         </section>
 
-        {/* Leadership Editor */}
         <section>
           <h3>Leadership</h3>
           {data.leadership.map((lead, index) => (
@@ -352,6 +267,39 @@ function App() {
           ))}
           <button onClick={() => addItem('leadership')}>Add Leadership</button>
         </section>
+
+        <section>
+          <h3>Certificates</h3>
+          {data.certificates.map((cert, index) => (
+            <div key={index}>
+              <input
+                type="text"
+                value={cert.name}
+                onChange={(e) => updateField('certificates', 'name', e.target.value, index)}
+                placeholder="Certificate Name"
+              />
+              <input
+                type="text"
+                value={cert.issuer}
+                onChange={(e) => updateField('certificates', 'issuer', e.target.value, index)}
+                placeholder="Issuer"
+              />
+              <input
+                type="text"
+                value={cert.date}
+                onChange={(e) => updateField('certificates', 'date', e.target.value, index)}
+                placeholder="Date"
+              />
+              <MDEditor
+                value={cert.description}
+                onChange={(value) => updateField('certificates', 'description', value, index)}
+                preview="edit"
+              />
+              <button onClick={() => removeItem('certificates', index)}>Remove</button>
+            </div>
+          ))}
+          <button onClick={() => addItem('certificates')}>Add Certificate</button>
+        </section>
       </div>
 
       <div className="pdf-preview">
@@ -361,12 +309,6 @@ function App() {
         </PDFViewer>
       </div>
 
-      <div className="export">
-        <h2>Export</h2>
-        <PDFDownloadLink document={<CVPdf data={data} />} fileName="my-cv.pdf">
-          {({ loading }) => (loading ? 'Loading...' : 'Download PDF')}
-        </PDFDownloadLink>
-      </div>
     </div>
   );
 }

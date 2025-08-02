@@ -3,6 +3,7 @@ import Education from './Education.jsx';
 import SkillsProjects from './SkillsProjects.jsx';
 import Experience from './Experience.jsx';
 import Leadership from './Leadership.jsx';
+import Certificates from './Certificates.jsx';
 
 const CVPreview = ({ data }) => (
   <div className="cv-preview">
@@ -11,6 +12,7 @@ const CVPreview = ({ data }) => (
     <SkillsProjects data={data.skills} />
     <Experience data={data.experience} />
     <Leadership data={data.leadership} />
+    <Certificates data={data.certificates} />
   </div>
 );
 
