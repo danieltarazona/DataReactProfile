@@ -193,7 +193,7 @@ const initialData = {
       location: 'Remote / Barranquilla, Atlántico, Colombia',
     },
     {
-      company: 'KOOMBEA',
+      company: '',
       role: 'Senior iOS Engineer for Transcard',
       date: 'June 2021 - December 2021',
       description: 'Constructed a VIPER-architected application with Swift Package integration for Apple Pay and Mastercard functionalities. Optimized prepaid and virtual card management, reducing integration efforts by 50% and enhancing fintech operational fluidity.',
@@ -228,14 +228,14 @@ const initialData = {
       location: 'On-Site / Cali, Colombia',
     },
     {
-      company: 'CAFETO SOFTWARE',
+      company: '',
       role: 'Senior JavaScript Engineer for Boxia',
       date: 'January 2020 - June 2020',
       description: 'Crafted a React Native application with Mapbox for enhanced geospatial features. Emphasized optimization and user-centric design, securing top ratings and recognition on AppAdvice.',
       location: 'On-Site / Cali, Colombia',
     },
     {
-      company: 'CAFETO SOFTWARE',
+      company: '',
       role: 'iOS Engineer and React Native Engineer for Swiftli',
       date: 'August 2019 - December 2019',
       description: 'Designed a hybrid iOS/React Native coworking social network integrating Algolia search, Mapbox, and Stripe. Heightened engagement with MVVM architecture and dynamic real-time capabilities, cultivating active user communities.',
@@ -263,7 +263,7 @@ const initialData = {
       location: 'Canary Islands, Spain',
     },
     {
-      company: 'FREELANCER',
+      company: '',
       role: 'Javascript Developer',
       date: 'March 2011 - March 2015',
       description: 'Constructed high-efficiency web applications using Node.js, npm, Gulp, and Express.js. Delivered scalable, premium-quality solutions to diverse international clients, emphasizing innovation and performance.',
