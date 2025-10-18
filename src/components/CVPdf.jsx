@@ -109,6 +109,11 @@ const CVPdf = ({ data }) => (
         <Text style={styles.contact}>
           {data.header.location} • {data.header.email} • {data.header.phone} • {data.header.github}
         </Text>
+        {data.header.summary && (
+          <Text style={{ fontSize: FONT_SIZE, textAlign: 'center', fontStyle: 'italic', marginTop: 10 }}>
+            {data.header.summary}
+          </Text>
+        )}
       </View>
 
       <View style={styles.section}>

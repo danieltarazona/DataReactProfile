@@ -14,8 +14,9 @@ function App() {
   const updateField = (section, field, value, index = null) => {
     setData((prev) => {
       if (index !== null) {
-        const updatedSection = [...prev[section]];
-        updatedSection[index][field] = value;
+        const updatedSection = prev[section].map((item, i) =>
+          i === index ? { ...item, [field]: value } : item
+        );
         return { ...prev, [section]: updatedSection };
       } else if (typeof field === 'object') {
         return { ...prev, [section]: { ...prev[section], ...field } };
@@ -27,16 +28,23 @@ function App() {
 
   const updateProject = (index, projField, value) => {
     setData((prev) => {
-      const updatedProjects = [...prev.skills.projects];
-      updatedProjects[index][projField] = value;
+      const updatedProjects = prev.skills.projects.map((proj, i) =>
+        i === index ? { ...proj, [projField]: value } : proj
+      );
       return { ...prev, skills: { ...prev.skills, projects: updatedProjects } };
     });
   };
 
   const addItem = (section) => {
+    const defaultValues = {
+      education: { institution: '', location: '', degree: '', date: '', coursework: '' },
+      experience: { company: '', role: '', date: '', location: '', description: '' },
+      leadership: { organization: '', role: '', date: '', location: '', description: '' },
+      certificates: { name: '', issuer: '', date: '', description: '' },
+    };
     setData((prev) => ({
       ...prev,
-      [section]: [...prev[section], {}],
+      [section]: [...prev[section], defaultValues[section] || {}],
     }));
   };
 
@@ -45,7 +53,7 @@ function App() {
       ...prev,
       skills: {
         ...prev.skills,
-        projects: [...prev.skills.projects, {}],
+        projects: [...prev.skills.projects, { name: '', date: '', description: '' }],
       },
     }));
   };
