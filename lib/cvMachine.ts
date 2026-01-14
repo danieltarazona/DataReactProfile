@@ -106,7 +106,7 @@ export const cvMachine = createMachine({
                 UPDATE_ITEM: {
                     actions: assign({
                         data: ({ context, event }) => {
-                            const section = context.data[event.section] as Record<string, unknown>[];
+                            const section = context.data[event.section] as unknown as Record<string, unknown>[];
                             const updatedSection = section.map((item, i) =>
                                 i === event.index ? { ...item, [event.field]: event.value } : item
                             );
