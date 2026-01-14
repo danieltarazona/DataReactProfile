@@ -1,0 +1,90 @@
+{
+    "app": {
+        "title": "DataProfile NextGen",
+        "subtitle": "CV Editor",
+        "description": "Create and edit your professional CV with live PDF preview"
+    },
+    "nav": {
+        "header": "Personal Info",
+        "education": "Education",
+        "skills": "Skills & Projects",
+        "experience": "Experience",
+        "leadership": "Leadership",
+        "certificates": "Certificates"
+    },
+    "header": {
+        "title": "Personal Information",
+        "name": "Full Name",
+        "jobTitle": "Job Title",
+        "location": "Location",
+        "email": "Email",
+        "phone": "Phone",
+        "github": "GitHub URL",
+        "summary": "Professional Summary"
+    },
+    "education": {
+        "title": "Education",
+        "institution": "Institution",
+        "location": "Location",
+        "degree": "Degree",
+        "date": "Date",
+        "coursework": "Coursework / Description",
+        "add": "Add Education",
+        "remove": "Remove"
+    },
+    "skills": {
+        "title": "Skills & Projects",
+        "programming": "Programming Skills",
+        "design": "Design Skills",
+        "tools": "Tools & Technologies",
+        "projects": "Projects",
+        "projectName": "Project Name",
+        "projectDate": "Date",
+        "projectDescription": "Description",
+        "add": "Add Project",
+        "remove": "Remove Project"
+    },
+    "experience": {
+        "title": "Work Experience",
+        "company": "Company",
+        "role": "Role / Position",
+        "date": "Date",
+        "location": "Location",
+        "description": "Description",
+        "add": "Add Experience",
+        "remove": "Remove"
+    },
+    "leadership": {
+        "title": "Leadership & Awards",
+        "organization": "Organization",
+        "role": "Role / Award",
+        "date": "Date",
+        "location": "Location",
+        "description": "Description",
+        "add": "Add Leadership",
+        "remove": "Remove"
+    },
+    "certificates": {
+        "title": "Certifications",
+        "name": "Certificate Name",
+        "issuer": "Issuer",
+        "date": "Date",
+        "description": "Description",
+        "add": "Add Certificate",
+        "remove": "Remove"
+    },
+    "actions": {
+        "save": "Save",
+        "saved": "Saved",
+        "saving": "Saving...",
+        "exportJson": "Export JSON",
+        "exportPdf": "Export PDF",
+        "preview": "Preview",
+        "language": "Language"
+    },
+    "messages": {
+        "autoSaved": "Auto-saved",
+        "exportSuccess": "Exported successfully",
+        "loadedFromStorage": "Loaded from saved data"
+    }
+}

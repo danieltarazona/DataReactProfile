@@ -1,0 +1,90 @@
+{
+    "app": {
+        "title": "DataProfile NextGen",
+        "subtitle": "Editor de CV",
+        "description": "Crea y edita tu CV profesional con vista previa de PDF en vivo"
+    },
+    "nav": {
+        "header": "Información Personal",
+        "education": "Educación",
+        "skills": "Habilidades y Proyectos",
+        "experience": "Experiencia",
+        "leadership": "Liderazgo",
+        "certificates": "Certificados"
+    },
+    "header": {
+        "title": "Información Personal",
+        "name": "Nombre Completo",
+        "jobTitle": "Título Profesional",
+        "location": "Ubicación",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "github": "URL de GitHub",
+        "summary": "Resumen Profesional"
+    },
+    "education": {
+        "title": "Educación",
+        "institution": "Institución",
+        "location": "Ubicación",
+        "degree": "Título / Grado",
+        "date": "Fecha",
+        "coursework": "Cursos / Descripción",
+        "add": "Agregar Educación",
+        "remove": "Eliminar"
+    },
+    "skills": {
+        "title": "Habilidades y Proyectos",
+        "programming": "Habilidades de Programación",
+        "design": "Habilidades de Diseño",
+        "tools": "Herramientas y Tecnologías",
+        "projects": "Proyectos",
+        "projectName": "Nombre del Proyecto",
+        "projectDate": "Fecha",
+        "projectDescription": "Descripción",
+        "add": "Agregar Proyecto",
+        "remove": "Eliminar Proyecto"
+    },
+    "experience": {
+        "title": "Experiencia Laboral",
+        "company": "Empresa",
+        "role": "Cargo / Posición",
+        "date": "Fecha",
+        "location": "Ubicación",
+        "description": "Descripción",
+        "add": "Agregar Experiencia",
+        "remove": "Eliminar"
+    },
+    "leadership": {
+        "title": "Liderazgo y Reconocimientos",
+        "organization": "Organización",
+        "role": "Rol / Reconocimiento",
+        "date": "Fecha",
+        "location": "Ubicación",
+        "description": "Descripción",
+        "add": "Agregar Liderazgo",
+        "remove": "Eliminar"
+    },
+    "certificates": {
+        "title": "Certificaciones",
+        "name": "Nombre del Certificado",
+        "issuer": "Emisor",
+        "date": "Fecha",
+        "description": "Descripción",
+        "add": "Agregar Certificado",
+        "remove": "Eliminar"
+    },
+    "actions": {
+        "save": "Guardar",
+        "saved": "Guardado",
+        "saving": "Guardando...",
+        "exportJson": "Exportar JSON",
+        "exportPdf": "Exportar PDF",
+        "preview": "Vista Previa",
+        "language": "Idioma"
+    },
+    "messages": {
+        "autoSaved": "Guardado automáticamente",
+        "exportSuccess": "Exportado exitosamente",
+        "loadedFromStorage": "Cargado desde datos guardados"
+    }
+}
