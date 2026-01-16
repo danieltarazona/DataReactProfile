@@ -3,7 +3,7 @@
  */
 
 import { createMachine, assign } from 'xstate';
-import type { CVData } from './types';
+import type { CVData } from '@datakit/react-ui-core';
 
 // Machine context
 interface CVContext {

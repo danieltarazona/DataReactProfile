@@ -8,20 +8,15 @@ import dynamic from 'next/dynamic';
 
 import { cvMachine } from '@/lib/cvMachine';
 import '@/lib/i18n';
-import type { CVData } from '@/lib/types';
-
-import HeaderSection from '@/components/HeaderSection';
-import EducationSection from '@/components/EducationSection';
-import SkillsSection from '@/components/SkillsSection';
-import ExperienceSection from '@/components/ExperienceSection';
-import LeadershipSection from '@/components/LeadershipSection';
-import CertificatesSection from '@/components/CertificatesSection';
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
-import Login from '@/components/Login';
+import {
+  HeaderSection, EducationSection, SkillsSection, ExperienceSection,
+  LeadershipSection, CertificatesSection, Sidebar, TopBar, Login,
+  type CVData
+} from '@datakit/react-ui-core';
 
 // Dynamic import for PDF to avoid SSR issues
-const PDFPreviewPanel = dynamic(() => import('@/components/PDFPreviewPanel'), {
+// Dynamic import for PDF to avoid SSR issues
+const PDFPreviewPanel = dynamic(() => import('@datakit/react-ui-core').then(mod => mod.PDFPreviewPanel), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center h-full">
@@ -43,6 +38,15 @@ const getDataFile = (lang: string): string => {
       return '/data.json';
   }
 };
+
+const sections: { id: SectionId; icon: string }[] = [
+  { id: 'header', icon: '👤' },
+  { id: 'education', icon: '🎓' },
+  { id: 'skills', icon: '💻' },
+  { id: 'experience', icon: '💼' },
+  { id: 'leadership', icon: '🏆' },
+  { id: 'certificates', icon: '📜' },
+];
 
 export default function Home() {
   const { t, i18n } = useTranslation();
@@ -201,6 +205,14 @@ export default function Home() {
         isLoading={authLoading}
         error={authError}
         onClearError={() => setAuthError(null)}
+        labels={{
+          title: t('auth.title'),
+          error: t('auth.error'),
+          email: t('auth.email'),
+          password: t('auth.password'),
+          loading: t('auth.loading'),
+          login: t('auth.login'),
+        }}
       />
     );
   }
@@ -209,10 +221,34 @@ export default function Home() {
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--color-background)]">
       {/* Sidebar Navigation */}
-      <Sidebar
-        activeSection={activeSection}
-        onSectionChange={scrollToSection}
-      />
+      {/* Sidebar Navigation */}
+      <Sidebar className="border-r border-[var(--color-border)] bg-[var(--color-card)]">
+        <Sidebar.Header>
+          <div className="p-2">
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]">{t('app.title')}</h1>
+            <p className="text-sm text-[var(--color-text-muted)] mt-1">{t('app.subtitle')}</p>
+          </div>
+        </Sidebar.Header>
+        <Sidebar.Content>
+          <Sidebar.Group>
+            {sections.map(section => (
+              <Sidebar.Item
+                key={section.id}
+                active={activeSection === section.id}
+                onClick={() => scrollToSection(section.id)}
+                icon={<span className="text-lg">{section.icon}</span>}
+              >
+                {t(`nav.${section.id}`)}
+              </Sidebar.Item>
+            ))}
+          </Sidebar.Group>
+        </Sidebar.Content>
+        <Sidebar.Footer>
+          <div className="p-2 text-xs text-center text-[var(--color-text-muted)]">
+            Built with DataKitReactUICore
+          </div>
+        </Sidebar.Footer>
+      </Sidebar>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -226,6 +262,14 @@ export default function Home() {
           isDirty={isDirty}
           lastSaved={lastSaved}
           onLogout={handleLogout}
+          labels={{
+            saving: t('actions.saving'),
+            saved: t('actions.saved'),
+            exportJson: t('actions.exportJson'),
+            logout: t('auth.logout'),
+            preview: t('actions.preview'),
+            showPDF: t('actions.exportPdf'),
+          }}
         />
 
         {/* Content */}
@@ -242,6 +286,16 @@ export default function Home() {
                 <HeaderSection
                   data={data.header}
                   onChange={(field, value) => send({ type: 'UPDATE_HEADER', field, value })}
+                  labels={{
+                    title: t('nav.header'),
+                    name: t('header.name'),
+                    jobTitle: t('header.jobTitle'),
+                    location: t('header.location'),
+                    email: t('header.email'),
+                    phone: t('header.phone'),
+                    github: t('header.github'),
+                    summary: t('header.summary'),
+                  }}
                 />
               </div>
 
@@ -254,6 +308,16 @@ export default function Home() {
                   onChange={(index, field, value) =>
                     send({ type: 'UPDATE_ITEM', section: 'education', index, field, value })
                   }
+                  labels={{
+                    title: t('education.title'),
+                    add: t('education.add'),
+                    remove: t('education.remove'),
+                    institution: t('education.institution'),
+                    location: t('education.location'),
+                    degree: t('education.degree'),
+                    date: t('education.date'),
+                    coursework: t('education.coursework'),
+                  }}
                 />
               </div>
 
@@ -267,6 +331,17 @@ export default function Home() {
                   onProjectChange={(index, field, value) =>
                     send({ type: 'UPDATE_PROJECT', index, field, value })
                   }
+                  labels={{
+                    title: t('skills.title'),
+                    programming: t('skills.programming'),
+                    design: t('skills.design'),
+                    projects: t('skills.projects'),
+                    add: t('skills.add'),
+                    remove: t('skills.remove'),
+                    projectName: t('skills.projectName'),
+                    projectDate: t('skills.projectDate'),
+                    projectDescription: t('skills.projectDescription'),
+                  }}
                 />
               </div>
 
@@ -279,6 +354,16 @@ export default function Home() {
                   onChange={(index, field, value) =>
                     send({ type: 'UPDATE_ITEM', section: 'experience', index, field, value })
                   }
+                  labels={{
+                    title: t('experience.title'),
+                    add: t('experience.add'),
+                    remove: t('experience.remove'),
+                    company: t('experience.company'),
+                    location: t('experience.location'),
+                    role: t('experience.role'),
+                    date: t('experience.date'),
+                    description: t('experience.description'),
+                  }}
                 />
               </div>
 
@@ -291,6 +376,16 @@ export default function Home() {
                   onChange={(index, field, value) =>
                     send({ type: 'UPDATE_ITEM', section: 'leadership', index, field, value })
                   }
+                  labels={{
+                    title: t('leadership.title'),
+                    add: t('leadership.add'),
+                    remove: t('leadership.remove'),
+                    organization: t('leadership.organization'),
+                    location: t('leadership.location'),
+                    role: t('leadership.role'),
+                    date: t('leadership.date'),
+                    description: t('leadership.description'),
+                  }}
                 />
               </div>
 
@@ -303,6 +398,15 @@ export default function Home() {
                   onChange={(index, field, value) =>
                     send({ type: 'UPDATE_ITEM', section: 'certificates', index, field, value })
                   }
+                  labels={{
+                    title: t('certificates.title'),
+                    add: t('certificates.add'),
+                    remove: t('certificates.remove'),
+                    name: t('certificates.name'),
+                    issuer: t('certificates.issuer'),
+                    date: t('certificates.date'),
+                    description: t('certificates.description'),
+                  }}
                 />
               </div>
             </div>
@@ -318,7 +422,19 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
                 className="border-l border-[var(--color-border)] overflow-hidden"
               >
-                <PDFPreviewPanel data={data} />
+                <PDFPreviewPanel
+                  data={data}
+                  labels={{
+                    preview: t('actions.preview'),
+                    education: t('education.title'),
+                    skills: t('skills.title'),
+                    programming: t('skills.programming'),
+                    design: t('skills.design'),
+                    experience: t('experience.title'),
+                    leadership: t('leadership.title'),
+                    certificates: t('certificates.title'),
+                  }}
+                />
               </motion.div>
             )}
           </AnimatePresence>
