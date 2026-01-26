@@ -54,6 +54,10 @@ export const onRequestPost: PagesFunction<Env> = async (context: EventContext<En
         const adminEmail = env.ADMIN_EMAIL;
         const adminPasswordHash = env.ADMIN_PASSWORD;
 
+        console.log('Available env keys:', Object.keys(env));
+        if (!adminEmail) console.error('ADMIN_EMAIL is missing');
+        if (!adminPasswordHash) console.error('ADMIN_PASSWORD is missing');
+
         if (!adminEmail || !adminPasswordHash) {
             console.error('Missing ADMIN_EMAIL or ADMIN_PASSWORD environment variables');
             return new Response(
@@ -115,8 +119,9 @@ export const onRequestPost: PagesFunction<Env> = async (context: EventContext<En
         );
     } catch (error) {
         console.error('Login error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         return new Response(
-            JSON.stringify({ error: 'Internal server error' }),
+            JSON.stringify({ error: `Internal server error: ${errorMessage}` }),
             { status: 500, headers: { 'Content-Type': 'application/json' } }
         );
     }

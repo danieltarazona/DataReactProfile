@@ -48,6 +48,9 @@ importers:
         specifier: ^5.25.1
         version: 5.25.1
     devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20260116.0
+        version: 4.20260116.0
       '@tailwindcss/postcss':
         specifier: ^4.1.18
         version: 4.1.18
@@ -150,8 +153,11 @@ packages:
     resolution: {integrity: sha512-0ZrskXVEHSWIqZM/sQZ4EV3jZJXRkio/WCxaqKZP1g//CEWEPSfeZFcms4XeKBCHU0ZKnIkdJeU/kF+eRp5lBg==}
     engines: {node: '>=6.9.0'}
 
+  '@cloudflare/workers-types@4.20260116.0':
+    resolution: {integrity: sha512-iMZIQDco7ARzzH+r8j90757kbPKEetKY3/6V5UurOzS6T1GJ+rsREw5i7vlBA4XjFV5UMaPtUD6HuUFSMLcxPQ==}
+
   '@datakit/react-ui-core@file:libs/datakit-react-ui-core.tgz':
-    resolution: {integrity: sha512-3LvI81vWkMc8awA+MRhjeNCS7jjm39QB/XE3btfJa2D9KJPa/XJcZst+Nb5jV6njKpjz0jNNk7syEMui/jzEGQ==, tarball: file:libs/datakit-react-ui-core.tgz}
+    resolution: {integrity: sha512-b416EEvuyjGD9M5C453wK/s6ssWsU1XC3Ij/zIPrvlsrJVPz+Wzi1OcYFIKr4+BN9SM0igUyV46wL2iFsOb0Rw==, tarball: file:libs/datakit-react-ui-core.tgz}
     version: 1.1.3
     peerDependencies:
       react: '>=18.0.0'
@@ -2856,6 +2862,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
+
+  '@cloudflare/workers-types@4.20260116.0': {}
 
   '@datakit/react-ui-core@file:libs/datakit-react-ui-core.tgz(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
