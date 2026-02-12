@@ -5,14 +5,14 @@
  */
 
 const LOCAL_PROXY = "http://localhost:3000/api/registry"; // Next.js default port
-const REMOTE_REGISTRY = "https://datakitreactcore.danieltarazona.workers.dev";
+const REMOTE_REGISTRY = "https://datakitnpmregistry.danieltarazona.workers.dev";
 
-const CF_CLIENT_ID = Deno.env.get("CF_CLIENT_ID");
-const CF_CLIENT_SECRET = Deno.env.get("CF_CLIENT_SECRET");
+const CF_ACCOUNT_ID = Deno.env.get("CF_ACCOUNT_ID");
+const CF_API_TOKEN = Deno.env.get("CF_API_TOKEN");
 
 const authHeaders = {
-    ...(CF_CLIENT_ID && { "CF-Access-Client-Id": CF_CLIENT_ID }),
-    ...(CF_CLIENT_SECRET && { "CF-Access-Client-Secret": CF_CLIENT_SECRET }),
+    ...(CF_ACCOUNT_ID && { "CF-Access-Client-Id": CF_ACCOUNT_ID }),
+    ...(CF_API_TOKEN && { "CF-Access-Client-Secret": CF_API_TOKEN }),
 };
 
 async function sync(packageName: string, useLatest: boolean = true) {
@@ -27,7 +27,7 @@ async function sync(packageName: string, useLatest: boolean = true) {
 
         if (useLatest) {
             const tarballUrl = `${registryUrl}/${packageName}/tarball/latest`;
-            const OUTPUT_FILE = `libs/${baseName}.tgz`; // Profile uses fixed name sometimes, but let's match the package.json expectation.
+            const OUTPUT_FILE = `libs/${baseName}-latest.tgz`; // Matches package.json expectation.
 
             console.log(`🚀 Downloading latest tarball from ${tarballUrl}...`);
             const tarballRes = await fetch(tarballUrl, { headers });
@@ -48,7 +48,7 @@ async function sync(packageName: string, useLatest: boolean = true) {
             const metadata = await res.json();
             const latestVersion = metadata["dist-tags"].latest;
             const tarballUrl = `${registryUrl}/${packageName}/tarball/${latestVersion}`;
-            const OUTPUT_FILE = `libs/${baseName}.tgz`;
+            const OUTPUT_FILE = `libs/${baseName}-${latestVersion}.tgz`;
 
             const tarballRes = await fetch(tarballUrl, { headers });
             const data = await tarballRes.arrayBuffer();

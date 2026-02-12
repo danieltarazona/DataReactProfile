@@ -10,7 +10,7 @@ import { cvMachine } from '@/lib/cvMachine';
 import '@/lib/i18n';
 import {
   HeaderSection, EducationSection, SkillsSection, ExperienceSection,
-  LeadershipSection, CertificatesSection, Sidebar, TopBar, Login,
+  LeadershipSection, CertificatesSection, Sidebar, TopBar, Login, useAuth,
   type CVData
 } from '@datakit/react-core';
 
@@ -54,28 +54,21 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState<SectionId>('header');
   const [showPreview, setShowPreview] = useState(true);
 
-  // Authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [authLoading, setAuthLoading] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
+  // Shared authentication hook
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    error: authError,
+    login: handleLogin,
+    logout: handleLogout,
+    clearError
+  } = useAuth({
+    loginEndpoint: '/api/auth/login',
+    verifyEndpoint: '/api/auth/verify',
+    logoutEndpoint: '/api/auth/logout'
+  });
 
   const { data, isDirty, lastSaved } = current.context;
-
-  // Check session on mount
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await fetch('/api/verify', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        setIsAuthenticated(response.ok);
-      } catch {
-        setIsAuthenticated(false);
-      }
-    };
-    checkSession();
-  }, []);
 
   // Load data based on language
   const loadDataForLanguage = useCallback(async (lang: string) => {
@@ -123,41 +116,6 @@ export default function Home() {
     }
   }, [isDirty, send, data, i18n.language, isAuthenticated]);
 
-  // Handle login
-  const handleLogin = async (email: string, password: string) => {
-    setAuthLoading(true);
-    setAuthError(null);
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-      if (response.ok) {
-        setIsAuthenticated(true);
-      } else {
-        setAuthError('Invalid credentials');
-      }
-    } catch {
-      setAuthError('Login failed');
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
-  // Handle logout
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } finally {
-      setIsAuthenticated(false);
-    }
-  };
-
   // Export to JSON
   const exportToJson = useCallback(() => {
     const dataStr = JSON.stringify(data, null, 2);
@@ -204,7 +162,7 @@ export default function Home() {
         onLogin={handleLogin}
         isLoading={authLoading}
         error={authError}
-        onClearError={() => setAuthError(null)}
+        onClearError={clearError}
         labels={{
           title: t('auth.title'),
           error: t('auth.error'),
