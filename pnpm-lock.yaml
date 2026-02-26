@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@datakit/cloudflare-login':
+        specifier: file:libs/datakit-cloudflare-login-latest.tgz
+        version: file:libs/datakit-cloudflare-login-latest.tgz
       '@datakit/react-core':
         specifier: file:libs/datakit-react-core-latest.tgz
         version: file:libs/datakit-react-core-latest.tgz(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -217,6 +220,10 @@ packages:
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
+
+  '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz':
+    resolution: {integrity: sha512-5YpJUvmN8tVTTIhsPff0UZwXoUNTbpxnDZtry9VOzKqulCU21F9UHIYDfh89IY4aWedFgKe+uhA0eg1tIYUw4A==, tarball: file:libs/datakit-cloudflare-login-latest.tgz}
+    version: 1.0.0
 
   '@datakit/react-core@file:libs/datakit-react-core-latest.tgz':
     resolution: {integrity: sha512-Y2ZL8MauftBeVPT4KmRUNkqwaBFXt86p+kvbiFwxFmLEv4Fc2dJXSVis3lnVkZlO9Dh19BuvAlcBumuGZ6PXIQ==, tarball: file:libs/datakit-react-core-latest.tgz}
@@ -3531,6 +3538,10 @@ snapshots:
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+
+  '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz':
+    dependencies:
+      hono: 4.11.9
 
   '@datakit/react-core@file:libs/datakit-react-core-latest.tgz(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
