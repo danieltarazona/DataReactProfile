@@ -16,7 +16,7 @@
     "deploy": "./scripts/deploy.sh",
     "upload": "git add . && git commit -m 'DataReactProfile' && git push origin main",
     "publish": "git checkout dev && git add . && git commit -m 'DataKitReactProfile' && git push && git checkout main && git merge dev && git push",
-    "sync:core": "CLOUDFLARE_ACCESS_CLIENT_ID='pass://DATA/Cloudflare_Access/client_id' CLOUDFLARE_ACCESS_CLIENT_SECRET='pass://DATA/Cloudflare_Access/client_secret' pass-cli run -- deno run --allow-all ../sync-core.ts @datakit/react-core",
+    "sync:core": "CLOUDFLARE_ACCESS_CLIENT_ID='pass://DATA/Cloudflare_Access/client_id' CLOUDFLARE_ACCESS_CLIENT_SECRET='pass://DATA/Cloudflare_Access/client_secret' pass-cli run -- deno run --allow-all ../scripts/sync-library.ts @datakit/react-core",
     "sync:latest": "pnpm run sync:core"
   },
   "dependencies": {
