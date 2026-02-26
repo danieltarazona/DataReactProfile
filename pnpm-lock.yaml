@@ -222,11 +222,11 @@ packages:
     engines: {node: '>=12'}
 
   '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz':
-    resolution: {integrity: sha512-5YpJUvmN8tVTTIhsPff0UZwXoUNTbpxnDZtry9VOzKqulCU21F9UHIYDfh89IY4aWedFgKe+uhA0eg1tIYUw4A==, tarball: file:libs/datakit-cloudflare-login-latest.tgz}
-    version: 1.0.0
+    resolution: {integrity: sha512-AWzrKMM1e1AiOi2ZNCfBIe13t+iFt+Rzn02mvUD5rhyQPx05enUUaBo0ivUCG0wgWbLpcLWZjQFXFyX7Gsa+7Q==, tarball: file:libs/datakit-cloudflare-login-latest.tgz}
+    version: 1.0.1
 
   '@datakit/react-core@file:libs/datakit-react-core-latest.tgz':
-    resolution: {integrity: sha512-Y2ZL8MauftBeVPT4KmRUNkqwaBFXt86p+kvbiFwxFmLEv4Fc2dJXSVis3lnVkZlO9Dh19BuvAlcBumuGZ6PXIQ==, tarball: file:libs/datakit-react-core-latest.tgz}
+    resolution: {integrity: sha512-1n1X5WkAekZzE7mxfQyLzBO0DOj0/UP8w9vf6YFj6d53vzO5u8D+v9NjkzmZQugtpWepI0oO6ADsEpUmQFUUrg==, tarball: file:libs/datakit-react-core-latest.tgz}
     version: 1.1.13
     peerDependencies:
       react: '>=18.0.0'
@@ -3542,9 +3542,11 @@ snapshots:
   '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz':
     dependencies:
       hono: 4.11.9
+      xstate: 5.28.0
 
   '@datakit/react-core@file:libs/datakit-react-core-latest.tgz(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
+      '@datakit/cloudflare-login': file:libs/datakit-cloudflare-login-latest.tgz
       '@hono/zod-validator': 0.4.3(hono@4.11.9)(zod@3.25.76)
       '@xstate/react': 5.0.5(@types/react@19.2.14)(react@19.2.3)(xstate@5.28.0)
       clsx: 2.1.1
