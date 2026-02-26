@@ -1,5 +1,27 @@
 name = "datareactprofile"
-pages_build_output_dir = "out"
-compatibility_date = "2026-01-01"
-compatibility_flags = ["nodejs_compat"]
+main = "src/server/index.ts"
+compatibility_date = "2026-01-15"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "datareactprofiled1"
+database_id = "1aafe2b0-0b8e-477d-b2b7-21866e8246ae"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
