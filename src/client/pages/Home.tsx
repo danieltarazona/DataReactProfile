@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMachine } from '@xstate/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { cvMachine } from '@/lib/cvMachine';
+import { useCV } from '@/lib/cvMachine';
 import {
     HeaderSection, EducationSection, SkillsSection, ExperienceSection,
     LeadershipSection, CertificatesSection, Sidebar, TopBar,
@@ -35,7 +34,7 @@ const sections: { id: SectionId; icon: string }[] = [
 
 export default function Home() {
     const { t, i18n } = useTranslation();
-    const [current, send] = useMachine(cvMachine, {});
+    const [current, send] = useCV();
     const [activeSection, setActiveSection] = useState<SectionId>('header');
     const [showPreview, setShowPreview] = useState(true);
 
@@ -50,7 +49,7 @@ export default function Home() {
         apiPath: '/api/auth'
     });
 
-    const { data, isDirty, lastSaved } = current.context;
+    const { data, isDirty, lastSaved } = current;
 
     const loadDataForLanguage = useCallback(async (lang: string) => {
         const savedKey = `cvData_${lang}`;

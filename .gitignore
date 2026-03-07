@@ -2,7 +2,6 @@
 .env
 .env.local
 .dev.vars
-.env.example
 
 .DS_Store
 .wrangler/

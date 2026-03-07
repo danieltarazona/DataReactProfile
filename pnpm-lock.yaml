@@ -6,6 +6,8 @@ settings:
 
 overrides:
   '@react-pdf/renderer': 4.3.2
+  xstate: ^5.25.1
+  '@xstate/react': ^6.0.0
 
 importers:
 
@@ -13,7 +15,7 @@ importers:
     dependencies:
       '@datakit/cloudflare-login':
         specifier: file:libs/datakit-cloudflare-login-latest.tgz
-        version: file:libs/datakit-cloudflare-login-latest.tgz(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: file:libs/datakit-cloudflare-login-latest.tgz(@xstate/react@6.1.0(@types/react@18.3.28)(react@18.3.1)(xstate@5.28.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(xstate@5.28.0)
       '@datakit/react-core':
         specifier: file:libs/datakit-react-core-latest.tgz
         version: file:libs/datakit-react-core-latest.tgz(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -238,11 +240,13 @@ packages:
     engines: {node: '>=12'}
 
   '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz':
-    resolution: {integrity: sha512-nLF7vJ+QPLbaysGdz4KBvQ6rK8USAT/JJ62PW36zLEW0EmSsZ1BfpTQEox3vWt6Uj1bnFcbmXGlX27SoNaah7A==, tarball: file:libs/datakit-cloudflare-login-latest.tgz}
+    resolution: {integrity: sha512-5eTNrjCa1yisz8QsgsVNaJ7iELgOorZwl4S2XlJiTkLego7x4HNHGvmyjyMihlT4cwXM7CdNtLIqLQdnnp/Mjg==, tarball: file:libs/datakit-cloudflare-login-latest.tgz}
     version: 1.2.0
     peerDependencies:
+      '@xstate/react': ^6.0.0
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
+      xstate: ^5.25.1
 
   '@datakit/react-core@file:libs/datakit-react-core-latest.tgz':
     resolution: {integrity: sha512-t5NS7VrEMVwPZZY/80kIhBGBFw5dAKqUeFQfO+E0cNbeUGmqp72VDwRfInK/uhJbtnYEHCkMVdq6dgaf3393Mg==, tarball: file:libs/datakit-react-core-latest.tgz}
@@ -1066,7 +1070,7 @@ packages:
     resolution: {integrity: sha512-ep9F0jGTI63B/jE8GHdMpUqtuz7yRebNaKv8EMUaiSi29NOglywc2X2YSOV/ygbIK+LtmgZ0q9anoEA2iBSEOw==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      xstate: ^5.28.0
+      xstate: ^5.25.1
     peerDependenciesMeta:
       xstate:
         optional: true
@@ -2178,7 +2182,7 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz(@xstate/react@6.1.0(@types/react@18.3.28)(react@18.3.1)(xstate@5.28.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(xstate@5.28.0)':
     dependencies:
       '@xstate/react': 6.1.0(@types/react@18.3.28)(react@18.3.1)(xstate@5.28.0)
       clsx: 2.1.1
@@ -2190,11 +2194,10 @@ snapshots:
       xstate: 5.28.0
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
-      - '@types/react'
 
   '@datakit/react-core@file:libs/datakit-react-core-latest.tgz(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@datakit/cloudflare-login': file:libs/datakit-cloudflare-login-latest.tgz(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@datakit/cloudflare-login': file:libs/datakit-cloudflare-login-latest.tgz(@xstate/react@6.1.0(@types/react@18.3.28)(react@18.3.1)(xstate@5.28.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(xstate@5.28.0)
       '@hono/zod-validator': 0.4.3(hono@4.12.3)(zod@3.25.76)
       '@xstate/react': 6.1.0(@types/react@18.3.28)(react@18.3.1)(xstate@5.28.0)
       clsx: 2.1.1

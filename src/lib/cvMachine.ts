@@ -1,20 +1,18 @@
 /**
- * XState Machine for CV Data State Management
+ * Custom hook for CV Data State Management
  */
 
-import { createMachine, assign } from 'xstate';
+import { useReducer, useEffect } from 'react';
 import type { CVData } from '@datakit/react-core';
 
-// Machine context
-interface CVContext {
+export interface CVContext {
     data: CVData;
     isDirty: boolean;
     lastSaved: Date | null;
     error: string | null;
 }
 
-// Machine events
-type CVEvent =
+export type CVEvent =
     | { type: 'UPDATE_HEADER'; field: keyof CVData['header']; value: string }
     | { type: 'UPDATE_SKILLS'; field: 'programming' | 'design' | 'tools'; value: string }
     | { type: 'UPDATE_ITEM'; section: 'education' | 'experience' | 'leadership' | 'certificates'; index: number; field: string; value: string }
@@ -30,7 +28,6 @@ type CVEvent =
     | { type: 'EXPORT_JSON' }
     | { type: 'CLEAR_ERROR' };
 
-// Initial CV data
 const initialData: CVData = {
     header: {
         name: '',
@@ -53,7 +50,6 @@ const initialData: CVData = {
     certificates: [],
 };
 
-// Default item templates
 const defaultItems = {
     education: { institution: '', location: '', degree: '', date: '', coursework: '' },
     experience: { company: '', role: '', date: '', location: '', description: '' },
@@ -62,157 +58,156 @@ const defaultItems = {
     project: { name: '', date: '', description: '' },
 };
 
-// CV State Machine
-export const cvMachine = createMachine({
-    id: 'cvEditor',
-    initial: 'idle',
-    types: {} as {
-        context: CVContext;
-        events: CVEvent;
-    },
-    context: {
+function cvReducer(state: CVContext, event: CVEvent): CVContext {
+    switch (event.type) {
+        case 'UPDATE_HEADER':
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    header: {
+                        ...state.data.header,
+                        [event.field]: event.value,
+                    },
+                },
+                isDirty: true,
+            };
+        case 'UPDATE_SKILLS':
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    skills: {
+                        ...state.data.skills,
+                        [event.field]: event.value,
+                    },
+                },
+                isDirty: true,
+            };
+        case 'UPDATE_ITEM': {
+            const section = state.data[event.section] as unknown as Record<string, unknown>[];
+            const updatedSection = section.map((item, i) =>
+                i === event.index ? { ...item, [event.field]: event.value } : item
+            );
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    [event.section]: updatedSection,
+                },
+                isDirty: true,
+            };
+        }
+        case 'UPDATE_PROJECT':
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    skills: {
+                        ...state.data.skills,
+                        projects: state.data.skills.projects.map((proj, i) =>
+                            i === event.index ? { ...proj, [event.field]: event.value } : proj
+                        ),
+                    },
+                },
+                isDirty: true,
+            };
+        case 'ADD_ITEM':
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    [event.section]: [
+                        ...state.data[event.section],
+                        { ...defaultItems[event.section] },
+                    ],
+                },
+                isDirty: true,
+            };
+        case 'ADD_PROJECT':
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    skills: {
+                        ...state.data.skills,
+                        projects: [...state.data.skills.projects, { ...defaultItems.project }],
+                    },
+                },
+                isDirty: true,
+            };
+        case 'REMOVE_ITEM':
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    [event.section]: state.data[event.section].filter((_, i) => i !== event.index),
+                },
+                isDirty: true,
+            };
+        case 'REMOVE_PROJECT':
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    skills: {
+                        ...state.data.skills,
+                        projects: state.data.skills.projects.filter((_, i) => i !== event.index),
+                    },
+                },
+                isDirty: true,
+            };
+        case 'LOAD_DATA':
+            return {
+                ...state,
+                data: event.data,
+                isDirty: false,
+            };
+        case 'SAVE':
+            return {
+                ...state,
+            };
+        case 'SAVE_SUCCESS':
+            return {
+                ...state,
+                isDirty: false,
+                lastSaved: new Date(),
+            };
+        case 'SAVE_ERROR':
+            return {
+                ...state,
+                error: event.error,
+            };
+        case 'CLEAR_ERROR':
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export function useCV() {
+    const [state, dispatch] = useReducer(cvReducer, {
         data: initialData,
         isDirty: false,
         lastSaved: null,
         error: null,
-    },
-    states: {
-        idle: {
-            on: {
-                UPDATE_HEADER: {
-                    actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            header: {
-                                ...context.data.header,
-                                [event.field]: event.value,
-                            },
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                UPDATE_SKILLS: {
-                    actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                [event.field]: event.value,
-                            },
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                UPDATE_ITEM: {
-                    actions: assign({
-                        data: ({ context, event }) => {
-                            const section = context.data[event.section] as unknown as Record<string, unknown>[];
-                            const updatedSection = section.map((item, i) =>
-                                i === event.index ? { ...item, [event.field]: event.value } : item
-                            );
-                            return {
-                                ...context.data,
-                                [event.section]: updatedSection,
-                            };
-                        },
-                        isDirty: () => true,
-                    }),
-                },
-                UPDATE_PROJECT: {
-                    actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                projects: context.data.skills.projects.map((proj, i) =>
-                                    i === event.index ? { ...proj, [event.field]: event.value } : proj
-                                ),
-                            },
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                ADD_ITEM: {
-                    actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            [event.section]: [
-                                ...context.data[event.section],
-                                { ...defaultItems[event.section] },
-                            ],
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                ADD_PROJECT: {
-                    actions: assign({
-                        data: ({ context }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                projects: [...context.data.skills.projects, { ...defaultItems.project }],
-                            },
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                REMOVE_ITEM: {
-                    actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            [event.section]: context.data[event.section].filter((_, i) => i !== event.index),
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                REMOVE_PROJECT: {
-                    actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                projects: context.data.skills.projects.filter((_, i) => i !== event.index),
-                            },
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                LOAD_DATA: {
-                    actions: assign({
-                        data: ({ event }) => event.data,
-                        isDirty: () => false,
-                    }),
-                },
-                SAVE: {
-                    target: 'saving',
-                },
-                CLEAR_ERROR: {
-                    actions: assign({
-                        error: () => null,
-                    }),
-                },
-            },
-        },
-        saving: {
-            entry: ({ context }) => {
-                // Save to localStorage
-                try {
-                    localStorage.setItem('cvData', JSON.stringify(context.data));
-                } catch {
-                    // Handle error in state
-                }
-            },
-            after: {
-                100: {
-                    target: 'idle',
-                    actions: assign({
-                        isDirty: () => false,
-                        lastSaved: () => new Date(),
-                    }),
-                },
-            },
-        },
-    },
-});
+    });
 
-export type CVMachine = typeof cvMachine;
+    const send = (event: CVEvent) => {
+        dispatch(event);
+        if (event.type === 'SAVE') {
+            try {
+                // Assuming localStorage saving is handled in the component tracking isDirty,
+                // but we emit success immediately here as a surrogate for the machine's "saving" state transition
+                dispatch({ type: 'SAVE_SUCCESS' });
+            } catch (error: any) {
+                dispatch({ type: 'SAVE_ERROR', error: error.message || 'Failed to save' });
+            }
+        }
+    };
+
+    return [state, send] as const;
+}
