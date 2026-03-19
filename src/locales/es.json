@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "Data Profile Generator",
+        "title": "DATA",
         "subtitle": "Editor de CV",
         "description": "Crea y edita tu CV profesional con vista previa de PDF en vivo"
     },
@@ -10,7 +10,13 @@
         "skills": "Habilidades y Proyectos",
         "experience": "Experiencia",
         "leadership": "Liderazgo",
-        "certificates": "Certificados"
+        "certificates": "Certificaciones",
+        "roles": "Roles",
+        "languages": "Idiomas",
+        "awards": "Premios",
+        "projects": "Proyectos",
+        "timeline": "Línea de Tiempo",
+        "code": "Editor de Código"
     },
     "header": {
         "title": "Información Personal",
@@ -80,7 +86,24 @@
         "exportJson": "Exportar JSON",
         "exportPdf": "Exportar PDF",
         "preview": "Vista Previa",
-        "language": "Idioma"
+        "language": "Idioma",
+        "roles": "Roles"
+    },
+    "languages": {
+        "title": "Idiomas",
+        "add": "Agregar Idioma",
+        "remove": "Eliminar",
+        "name": "Nombre del Idioma",
+        "level": "Nivel de Dominio"
+    },
+    "levels": {
+        "A1": "A1 - Principiante",
+        "A2": "A2 - Elemental",
+        "B1": "B1 - Pre-Intermedio",
+        "B2": "B2 - Intermedio",
+        "C1": "C1 - Intermedio Alto",
+        "C2": "C2 - Avanzado",
+        "Native": "Nativo"
     },
     "messages": {
         "autoSaved": "Guardado automáticamente",
@@ -94,6 +117,14 @@
         "login": "Ingresar",
         "logout": "Cerrar Sesión",
         "error": "Correo o contraseña incorrectos",
-        "loading": "Ingresando..."
+        "loading": "Ingresando...",
+        "awards": {
+            "title": "Premios y Reconocimientos",
+            "add": "Añadir premio",
+            "name": "Nombre del premio",
+            "issuer": "Emisor",
+            "date": "Fecha",
+            "description": "Descripción"
+        }
     }
 }

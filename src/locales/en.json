@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "Data Profile Generator",
+        "title": "DATA",
         "subtitle": "CV Editor",
         "description": "Create and edit your professional CV with live PDF preview"
     },
@@ -10,7 +10,13 @@
         "skills": "Skills & Projects",
         "experience": "Experience",
         "leadership": "Leadership",
-        "certificates": "Certificates"
+        "certificates": "Certificates",
+        "roles": "Roles",
+        "languages": "Languages",
+        "awards": "Awards",
+        "projects": "Projects",
+        "timeline": "Timeline",
+        "code": "Code Editor"
     },
     "header": {
         "title": "Personal Information",
@@ -80,7 +86,24 @@
         "exportJson": "Export JSON",
         "exportPdf": "Export PDF",
         "preview": "Preview",
-        "language": "Language"
+        "language": "Language",
+        "roles": "Roles"
+    },
+    "languages": {
+        "title": "Languages",
+        "add": "Add Language",
+        "remove": "Remove",
+        "name": "Language Name",
+        "level": "Proficiency Level"
+    },
+    "levels": {
+        "A1": "A1 - Beginner",
+        "A2": "A2 - Elementary",
+        "B1": "B1 - Pre-Intermediate",
+        "B2": "B2 - Intermediate",
+        "C1": "C1 - Upper-Intermediate",
+        "C2": "C2 - Advanced",
+        "Native": "Native"
     },
     "messages": {
         "autoSaved": "Auto-saved",
@@ -94,6 +117,14 @@
         "login": "Sign In",
         "logout": "Logout",
         "error": "Invalid email or password",
-        "loading": "Signing in..."
+        "loading": "Signing in...",
+        "awards": {
+            "title": "Awards & Honors",
+            "add": "Add Award",
+            "name": "Award Name",
+            "issuer": "Issuer",
+            "date": "Date",
+            "description": "Description"
+        }
     }
 }

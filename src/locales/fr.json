@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "Data Profile Generator",
+        "title": "DATA",
         "subtitle": "Éditeur de CV",
         "description": "Créez et éditez votre CV professionnel avec aperçu PDF en direct"
     },
@@ -8,9 +8,12 @@
         "header": "Informations Personnelles",
         "education": "Formation",
         "skills": "Compétences et Projets",
-        "experience": "Expérience",
-        "leadership": "Leadership",
-        "certificates": "Certificats"
+        "certificates": "Certificats",
+        "languages": "Langues",
+        "awards": "Prix",
+        "projects": "Projets",
+        "timeline": "Chronologie",
+        "code": "Éditeur de Code"
     },
     "header": {
         "title": "Informations Personnelles",
@@ -80,7 +83,24 @@
         "exportJson": "Exporter JSON",
         "exportPdf": "Exporter PDF",
         "preview": "Aperçu",
-        "language": "Langue"
+        "language": "Langue",
+        "roles": "Rôles"
+    },
+    "languages": {
+        "title": "Langues",
+        "add": "Ajouter une Langue",
+        "remove": "Supprimer",
+        "name": "Nom de la Langue",
+        "level": "Niveau de Maîtrise"
+    },
+    "levels": {
+        "A1": "A1 - Débutant",
+        "A2": "A2 - Élémentaire",
+        "B1": "B1 - Pré-intermédiaire",
+        "B2": "B2 - Intermédiaire",
+        "C1": "C1 - Intermédiaire Supérieur",
+        "C2": "C2 - Avancé",
+        "Native": "Maternel"
     },
     "messages": {
         "autoSaved": "Enregistré automatiquement",
@@ -94,6 +114,14 @@
         "login": "Se connecter",
         "logout": "Déconnexion",
         "error": "E-mail ou mot de passe incorrect",
-        "loading": "Connexion en cours..."
+        "loading": "Connexion en cours...",
+        "awards": {
+            "title": "Prix et Distinctions",
+            "add": "Ajouter un prix",
+            "name": "Nom du prix",
+            "issuer": "Émetteur",
+            "date": "Date",
+            "description": "Description"
+        }
     }
 }

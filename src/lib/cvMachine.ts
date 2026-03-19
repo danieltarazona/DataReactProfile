@@ -1,13 +1,15 @@
 /**
  * XState Machine for CV Data State Management
+ * Updated for D1 API integration and Trilingual fields
  */
 
 import { createMachine, assign } from 'xstate';
-import type { CVData } from '@datakit/react-core';
+import type { FullCVData, CVRole, CVHeaderData, CVEntry } from '../client/api';
 
 // Machine context
 interface CVContext {
-    data: CVData;
+    data: FullCVData | null;
+    activeRoleId: string;
     isDirty: boolean;
     lastSaved: Date | null;
     error: string | null;
@@ -15,172 +17,153 @@ interface CVContext {
 
 // Machine events
 type CVEvent =
-    | { type: 'UPDATE_HEADER'; field: keyof CVData['header']; value: string }
-    | { type: 'UPDATE_SKILLS'; field: 'programming' | 'design' | 'tools'; value: string }
-    | { type: 'UPDATE_ITEM'; section: 'education' | 'experience' | 'leadership' | 'certificates'; index: number; field: string; value: string }
-    | { type: 'UPDATE_PROJECT'; index: number; field: string; value: string }
-    | { type: 'ADD_ITEM'; section: 'education' | 'experience' | 'leadership' | 'certificates' }
-    | { type: 'ADD_PROJECT' }
-    | { type: 'REMOVE_ITEM'; section: 'education' | 'experience' | 'leadership' | 'certificates'; index: number }
-    | { type: 'REMOVE_PROJECT'; index: number }
+    | { type: 'LOAD_DATA'; data: FullCVData }
+    | { type: 'SET_ROLE'; roleId: string }
+    | { type: 'UPDATE_HEADER'; field: keyof CVHeaderData; value: string }
+    | { type: 'UPDATE_ENTRY'; section: keyof FullCVData; id: string; field: string; value: string }
+    | { type: 'UPDATE_ENTRY_ROLES'; section: keyof FullCVData; id: string; roleIds: string }
+    | { type: 'ADD_ENTRY'; section: keyof FullCVData; entry: CVEntry }
+    | { type: 'REMOVE_ENTRY'; section: keyof FullCVData; id: string }
+    | { type: 'REORDER_ENTRIES'; section: keyof FullCVData; items: any[] }
+    | { type: 'REORDER_SECTIONS'; sections: any[] }
     | { type: 'SAVE' }
     | { type: 'SAVE_SUCCESS' }
     | { type: 'SAVE_ERROR'; error: string }
-    | { type: 'LOAD_DATA'; data: CVData }
-    | { type: 'EXPORT_JSON' }
     | { type: 'CLEAR_ERROR' };
-
-// Initial CV data
-const initialData: CVData = {
-    header: {
-        name: '',
-        title: '',
-        location: '',
-        email: '',
-        phone: '',
-        github: '',
-        summary: '',
-    },
-    education: [],
-    skills: {
-        programming: '',
-        design: '',
-        tools: '',
-        projects: [],
-    },
-    experience: [],
-    leadership: [],
-    certificates: [],
-};
-
-// Default item templates
-const defaultItems = {
-    education: { institution: '', location: '', degree: '', date: '', coursework: '' },
-    experience: { company: '', role: '', date: '', location: '', description: '' },
-    leadership: { organization: '', role: '', date: '', location: '', description: '' },
-    certificates: { name: '', issuer: '', date: '', description: '' },
-    project: { name: '', date: '', description: '' },
-};
 
 // CV State Machine
 export const cvMachine = createMachine({
     id: 'cvEditor',
-    initial: 'idle',
+    initial: 'loading',
     types: {} as {
         context: CVContext;
         events: CVEvent;
     },
     context: {
-        data: initialData,
+        data: null,
+        activeRoleId: 'all',
         isDirty: false,
         lastSaved: null,
         error: null,
     },
     states: {
+        loading: {
+            on: {
+                LOAD_DATA: {
+                    target: 'idle',
+                    actions: assign({
+                        data: ({ event }) => event.data,
+                        isDirty: () => false,
+                    }),
+                },
+            },
+        },
         idle: {
             on: {
+                LOAD_DATA: {
+                    actions: assign({
+                        data: ({ event }) => event.data,
+                        isDirty: () => false,
+                    }),
+                },
+                SET_ROLE: {
+                    actions: assign({
+                        activeRoleId: ({ event }) => event.roleId,
+                    }),
+                },
                 UPDATE_HEADER: {
                     actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            header: {
-                                ...context.data.header,
-                                [event.field]: event.value,
-                            },
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                UPDATE_SKILLS: {
-                    actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                [event.field]: event.value,
-                            },
-                        }),
-                        isDirty: () => true,
-                    }),
-                },
-                UPDATE_ITEM: {
-                    actions: assign({
                         data: ({ context, event }) => {
-                            const section = context.data[event.section] as unknown as Record<string, unknown>[];
-                            const updatedSection = section.map((item, i) =>
-                                i === event.index ? { ...item, [event.field]: event.value } : item
-                            );
+                            if (!context.data || !context.data.header) return context.data;
                             return {
                                 ...context.data,
-                                [event.section]: updatedSection,
+                                header: {
+                                    ...context.data.header,
+                                    [event.field]: event.value,
+                                },
                             };
                         },
                         isDirty: () => true,
                     }),
                 },
-                UPDATE_PROJECT: {
+                UPDATE_ENTRY: {
                     actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                projects: context.data.skills.projects.map((proj, i) =>
-                                    i === event.index ? { ...proj, [event.field]: event.value } : proj
-                                ),
-                            },
-                        }),
+                        data: ({ context, event }) => {
+                            if (!context.data) return context.data;
+                            const section = context.data[event.section] as CVEntry[];
+                            const updated = section.map(item =>
+                                item.id === event.id ? { ...item, [event.field]: event.value } : item
+                            );
+                            return {
+                                ...context.data,
+                                [event.section]: updated,
+                            };
+                        },
                         isDirty: () => true,
                     }),
                 },
-                ADD_ITEM: {
+                UPDATE_ENTRY_ROLES: {
                     actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            [event.section]: [
-                                ...context.data[event.section],
-                                { ...defaultItems[event.section] },
-                            ],
-                        }),
+                        data: ({ context, event }) => {
+                            if (!context.data) return context.data;
+                            const section = context.data[event.section] as CVEntry[];
+                            const updated = section.map(item =>
+                                item.id === event.id ? { ...item, roleIds: event.roleIds } : item
+                            );
+                            return {
+                                ...context.data,
+                                [event.section]: updated,
+                            };
+                        },
                         isDirty: () => true,
                     }),
                 },
-                ADD_PROJECT: {
+                ADD_ENTRY: {
                     actions: assign({
-                        data: ({ context }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                projects: [...context.data.skills.projects, { ...defaultItems.project }],
-                            },
-                        }),
+                        data: ({ context, event }) => {
+                            if (!context.data) return context.data;
+                            return {
+                                ...context.data,
+                                [event.section]: [...(context.data[event.section] as CVEntry[]), event.entry],
+                            };
+                        },
                         isDirty: () => true,
                     }),
                 },
-                REMOVE_ITEM: {
+                REMOVE_ENTRY: {
                     actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            [event.section]: context.data[event.section].filter((_, i) => i !== event.index),
-                        }),
+                        data: ({ context, event }) => {
+                            if (!context.data) return context.data;
+                            return {
+                                ...context.data,
+                                [event.section]: (context.data[event.section] as CVEntry[]).filter(item => item.id !== event.id),
+                            };
+                        },
                         isDirty: () => true,
                     }),
                 },
-                REMOVE_PROJECT: {
+                REORDER_ENTRIES: {
                     actions: assign({
-                        data: ({ context, event }) => ({
-                            ...context.data,
-                            skills: {
-                                ...context.data.skills,
-                                projects: context.data.skills.projects.filter((_, i) => i !== event.index),
-                            },
-                        }),
+                        data: ({ context, event }) => {
+                            if (!context.data) return context.data;
+                            return {
+                                ...context.data,
+                                [event.section]: event.items,
+                            };
+                        },
                         isDirty: () => true,
                     }),
                 },
-                LOAD_DATA: {
+                REORDER_SECTIONS: {
                     actions: assign({
-                        data: ({ event }) => event.data,
-                        isDirty: () => false,
+                        data: ({ context, event }) => {
+                            if (!context.data) return context.data;
+                            return {
+                                ...context.data,
+                                sectionOrder: event.sections,
+                            };
+                        },
+                        isDirty: () => true,
                     }),
                 },
                 SAVE: {
@@ -194,20 +177,18 @@ export const cvMachine = createMachine({
             },
         },
         saving: {
-            entry: ({ context }) => {
-                // Save to localStorage
-                try {
-                    localStorage.setItem('cvData', JSON.stringify(context.data));
-                } catch {
-                    // Handle error in state
-                }
-            },
-            after: {
-                100: {
+            on: {
+                SAVE_SUCCESS: {
                     target: 'idle',
                     actions: assign({
                         isDirty: () => false,
                         lastSaved: () => new Date(),
+                    }),
+                },
+                SAVE_ERROR: {
+                    target: 'idle',
+                    actions: assign({
+                        error: ({ event }) => event.error,
                     }),
                 },
             },

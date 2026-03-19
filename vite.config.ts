@@ -14,6 +14,22 @@ export default defineConfig(({ mode }) => {
             plugins: [react()],
             build: {
                 outDir: 'dist',
+                chunkSizeWarningLimit: 600,
+                rollupOptions: {
+                    output: {
+                        manualChunks: {
+                            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+                            'xstate-vendor': ['xstate', '@xstate/react'],
+                            'motion-vendor': ['motion'],
+                        },
+                    },
+                },
+            },
+            esbuild: {
+                logOverride: { 'css-syntax-error': 'silent' },
+            },
+            css: {
+                postcss: './postcss.config.js',
             },
             resolve: {
                 alias: {
