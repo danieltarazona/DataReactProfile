@@ -11,7 +11,8 @@
     "upload": "git add . && git commit -m 'DataReactProfile Refactor' && git push origin main",
     "sync:core": "CLOUDFLARE_ACCESS_CLIENT_ID='pass://DATA/Cloudflare_Access/client_id1' CLOUDFLARE_ACCESS_CLIENT_SECRET='pass://DATA/Cloudflare_Access/client_secret' pass-cli run -- deno run --allow-all ../scripts/sync-library.ts @datakit/react-core",
     "sync:login": "CLOUDFLARE_ACCESS_CLIENT_ID='pass://DATA/Cloudflare_Access/client_id' CLOUDFLARE_ACCESS_CLIENT_SECRET='pass://DATA/Cloudflare_Access/client_secret' pass-cli run -- deno run --allow-all ../scripts/sync-library.ts @datakit/cloudflare-login",
-    "sync:latest": "pnpm run sync:core && pnpm run sync:login"
+    "sync:latest": "pnpm run sync:core && pnpm run sync:login",
+    "password": "deno run ../scripts/hash_password.ts"
   },
   "dependencies": {
     "@datakit/cloudflare-login": "file:libs/datakit-cloudflare-login-latest.tgz",
@@ -50,7 +51,9 @@
   },
   "pnpm": {
     "overrides": {
-      "@react-pdf/renderer": "4.3.2"
+      "@react-pdf/renderer": "4.3.2",
+      "xstate": "^5.25.1",
+      "@xstate/react": "^6.0.0"
     }
   }
 }

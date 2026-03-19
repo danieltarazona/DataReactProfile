@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
             plugins: [react()],
             build: {
                 outDir: 'dist',
+<<<<<<< HEAD
                 chunkSizeWarningLimit: 600,
                 rollupOptions: {
                     output: {
@@ -30,11 +31,29 @@ export default defineConfig(({ mode }) => {
             },
             css: {
                 postcss: './postcss.config.js',
+=======
+                chunkSizeWarningLimit: 500,
+                rollupOptions: {
+                    output: {
+                        manualChunks(id) {
+                            if (id.indexOf('node_modules') !== -1) {
+                                return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                            }
+                        }
+                    }
+                }
+>>>>>>> 3e03fc60d311899ce07700181ff6b72c3def2aa9
             },
             resolve: {
                 alias: {
                     '@': path.resolve(__dirname, './src'),
+                    'xstate': path.resolve(__dirname, 'node_modules/xstate'),
+                    '@xstate/react': path.resolve(__dirname, 'node_modules/@xstate/react'),
                 },
+                dedupe: ['xstate', '@xstate/react', 'react', 'react-dom'],
+            },
+            optimizeDeps: {
+                exclude: ['@datakit/cloudflare-login'],
             },
         }
     } else {
@@ -47,7 +66,16 @@ export default defineConfig(({ mode }) => {
             resolve: {
                 alias: {
                     '@': path.resolve(__dirname, './src'),
+                    'xstate': path.resolve(__dirname, 'node_modules/xstate'),
+                    '@xstate/react': path.resolve(__dirname, 'node_modules/@xstate/react'),
                 },
+                dedupe: ['xstate', '@xstate/react', 'react', 'react-dom'],
+            },
+            optimizeDeps: {
+                exclude: ['@datakit/cloudflare-login'],
+            },
+            ssr: {
+                noExternal: ['@datakit/cloudflare-login', 'xstate', '@xstate/react'],
             },
         }
     }
