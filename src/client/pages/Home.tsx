@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
-import { useCV } from '@/lib/cvMachine';
+import { useMachine } from '@xstate/react';
+import { cvMachine } from '@/lib/cvMachine';
 import {
     HeaderSection, EducationSection, SkillsSection, ExperienceSection,
     LeadershipSection, CertificatesSection, Sidebar, TopBar,
@@ -37,11 +38,7 @@ const sections: { id: SectionId; icon: string }[] = [
 
 export default function Home() {
     const { t, i18n } = useTranslation();
-<<<<<<< HEAD
     const [state, send] = useMachine(cvMachine);
-=======
-    const [current, send] = useCV();
->>>>>>> 3e03fc60d311899ce07700181ff6b72c3def2aa9
     const [activeSection, setActiveSection] = useState<SectionId>('header');
     const [showPreview, setShowPreview] = useState(true);
 
@@ -56,11 +53,7 @@ export default function Home() {
         apiPath: '/api/auth'
     });
 
-<<<<<<< HEAD
     const { data, activeRoleId, isDirty, lastSaved } = state.context;
-=======
-    const { data, isDirty, lastSaved } = current;
->>>>>>> 3e03fc60d311899ce07700181ff6b72c3def2aa9
 
     // Expert Hooks for Section Management
     const educationSect = useCVSection('education', send, data);

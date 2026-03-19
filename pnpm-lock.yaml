@@ -252,23 +252,13 @@ packages:
     engines: {node: '>=12'}
 
   '@datakit/cloudflare-login@file:libs/datakit-cloudflare-login-latest.tgz':
-<<<<<<< HEAD
     resolution: {integrity: sha512-ZKzmc+cugmT3LVVjn4go1uSXn5BuG4zao1muiBAR2hP12Un5PIV8E9fmRT+fTcMcO4LQpc+WPYTxEdDCk6DG1A==, tarball: file:libs/datakit-cloudflare-login-latest.tgz}
-    version: 1.2.0
-    peerDependencies:
-      '@xstate/react': '>=4.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      xstate: '>=5.0.0'
-=======
-    resolution: {integrity: sha512-5eTNrjCa1yisz8QsgsVNaJ7iELgOorZwl4S2XlJiTkLego7x4HNHGvmyjyMihlT4cwXM7CdNtLIqLQdnnp/Mjg==, tarball: file:libs/datakit-cloudflare-login-latest.tgz}
     version: 1.2.0
     peerDependencies:
       '@xstate/react': ^6.0.0
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
       xstate: ^5.25.1
->>>>>>> 3e03fc60d311899ce07700181ff6b72c3def2aa9
 
   '@datakit/react-core@file:libs/datakit-react-core-latest.tgz':
     resolution: {integrity: sha512-t5NS7VrEMVwPZZY/80kIhBGBFw5dAKqUeFQfO+E0cNbeUGmqp72VDwRfInK/uhJbtnYEHCkMVdq6dgaf3393Mg==, tarball: file:libs/datakit-react-core-latest.tgz}

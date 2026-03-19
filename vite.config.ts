@@ -14,7 +14,6 @@ export default defineConfig(({ mode }) => {
             plugins: [react()],
             build: {
                 outDir: 'dist',
-<<<<<<< HEAD
                 chunkSizeWarningLimit: 600,
                 rollupOptions: {
                     output: {
@@ -31,18 +30,6 @@ export default defineConfig(({ mode }) => {
             },
             css: {
                 postcss: './postcss.config.js',
-=======
-                chunkSizeWarningLimit: 500,
-                rollupOptions: {
-                    output: {
-                        manualChunks(id) {
-                            if (id.indexOf('node_modules') !== -1) {
-                                return id.toString().split('node_modules/')[1].split('/')[0].toString();
-                            }
-                        }
-                    }
-                }
->>>>>>> 3e03fc60d311899ce07700181ff6b72c3def2aa9
             },
             resolve: {
                 alias: {
