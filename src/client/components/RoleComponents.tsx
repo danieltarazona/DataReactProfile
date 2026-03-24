@@ -8,13 +8,14 @@ interface RoleSelectorProps {
     selectedRoleIds: string;
     onChange: (roleIds: string) => void;
     compact?: boolean;
+    hideAll?: boolean;
 }
 
 /**
  * Multi-select role badge selector for each CV entry.
  * Shows small clickable badges for each role.
  */
-export function RoleSelector({ roles, selectedRoleIds, onChange, compact }: RoleSelectorProps) {
+export function RoleSelector({ roles, selectedRoleIds, onChange, compact, hideAll }: RoleSelectorProps) {
     const selected = new Set(selectedRoleIds.split(',').map(s => s.trim()).filter(Boolean));
 
     const toggle = (roleId: string) => {
@@ -31,7 +32,7 @@ export function RoleSelector({ roles, selectedRoleIds, onChange, compact }: Role
 
     return (
         <div className="flex flex-wrap gap-1 mt-1">
-            {roles.map(role => (
+            {roles.filter(r => hideAll ? r.id !== 'all' : true).map(role => (
                 <button
                     key={role.id}
                     type="button"
@@ -58,13 +59,14 @@ interface RoleManagerProps {
     onActiveRoleChange: (roleId: string) => void;
     onCreateRole: (name: string, jobTitle: string) => void;
     onDeleteRole: (id: string) => void;
+    onUpdateRole: (id: string, updates: Partial<CVRole>) => void;
 }
 
 /**
  * Role management panel — create/delete roles, select active role.
  * Uses a Modal for role creation as requested.
  */
-export function RoleManager({ roles, activeRoleId, onActiveRoleChange, onCreateRole, onDeleteRole }: RoleManagerProps) {
+export function RoleManager({ roles, activeRoleId, onActiveRoleChange, onCreateRole, onDeleteRole, onUpdateRole }: RoleManagerProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newName, setNewName] = useState('');
     const [newJobTitle, setNewJobTitle] = useState('');
@@ -114,6 +116,20 @@ export function RoleManager({ roles, activeRoleId, onActiveRoleChange, onCreateR
                     <Plus size={16} /> Add Role
                 </button>
             </div>
+
+            {roles.find(r => r.id === activeRoleId && r.id !== 'all') && (
+                <div className="mt-4 p-4 border border-white/10 rounded-xl bg-white/5 flex gap-4 items-end max-w-md">
+                    <div className="flex-1 space-y-2">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Edit Role Title</label>
+                        <input
+                            value={roles.find(r => r.id === activeRoleId)?.jobTitle || ''}
+                            onChange={(e) => onUpdateRole(activeRoleId, { jobTitle: e.target.value })}
+                            placeholder="e.g. Senior Mobile Developer"
+                            className="w-full px-4 py-2 rounded-lg bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:border-blue-500 transition-all"
+                        />
+                    </div>
+                </div>
+            )}
 
             <AnimatePresence>
                 {isModalOpen && (

@@ -6,7 +6,7 @@ import { cvMachine } from '@/lib/cvMachine';
 import {
     HeaderSection, EducationSection, SkillsSection, ExperienceSection,
     LeadershipSection, CertificatesSection, Sidebar, TopBar,
-    PDFPreviewPanel,
+    PDFPreviewPanel, Button,
     type CVData
 } from '@datakit/react-core';
 import { Login, useAuth } from '@datakit/cloudflare-login';
@@ -139,15 +139,26 @@ export default function Home() {
                 }))
                 : [],
             experience: visibleSections.includes('experience')
-                ? (data.experience || []).filter(isVisible).map(it => mapFields(it, ['role', 'description', 'location']))
+                ? (data.experience || []).filter(isVisible).map(it => {
+                    const mappedExp = mapFields(it, ['role', 'description', 'location']);
+                    mappedExp.projects = (data.projects || [])
+                        .filter(p => p.experienceId === it.id && isVisible(p))
+                        .map(p => ({
+                            ...mapFields(p, ['name', 'description', 'location']),
+                            link: p.link
+                        }));
+                    return mappedExp;
+                })
                 : [],
             skills: {
-                ...(data.skills?.[0] || {}),
-                programming: visibleSections.includes('skills') ? api.getLocalizedField(data.skills?.[0] || {}, 'name', lang) : '',
-                design: '',
-                tools: '',
+                programming: visibleSections.includes('skills') 
+                    ? (data.skills || []).filter(s => s.category === 'programming').filter(isVisible).map(s => api.getLocalizedField(s, 'name', lang)).join(', ') : '',
+                design: visibleSections.includes('skills') 
+                    ? (data.skills || []).filter(s => s.category === 'design').filter(isVisible).map(s => api.getLocalizedField(s, 'name', lang)).join(', ') : '',
+                tools: visibleSections.includes('skills') 
+                    ? (data.skills || []).filter(s => s.category === 'tools').filter(isVisible).map(s => api.getLocalizedField(s, 'name', lang)).join(', ') : '',
                 projects: visibleSections.includes('projects')
-                    ? (data.projects || []).filter(isVisible).map(it => ({
+                    ? (data.projects || []).filter(p => !p.experienceId && isVisible(p)).map(it => ({
                         ...mapFields(it, ['name', 'description', 'location']),
                         link: it.link
                     }))
@@ -278,7 +289,36 @@ export default function Home() {
                     >
                         {data && (
                             <div className="max-w-3xl mx-auto space-y-12">
-                                {activeSection === 'timeline' ? (
+                                {activeSection === 'roles' ? (
+                                    <div className="space-y-8">
+                                        <div className="space-y-1 mb-6">
+                                            <h2 className="text-3xl font-bold tracking-tight">{t('nav.roles')}</h2>
+                                            <div className="h-1.5 w-12 bg-green-500 rounded-full" />
+                                        </div>
+                                        <div className="card-editor">
+                                            <RoleManager
+                                                roles={data?.roles || []}
+                                                activeRoleId={activeRoleId}
+                                                onActiveRoleChange={(id) => send({ type: 'SET_ROLE', roleId: id })}
+                                                onCreateRole={async (name, jobTitle) => {
+                                                    const { id } = await api.createRole(name, jobTitle);
+                                                    const updated = await api.fetchRoles();
+                                                    send({ type: 'LOAD_DATA', data: { ...data!, roles: updated } });
+                                                }}
+                                                onDeleteRole={async (id) => {
+                                                    await api.deleteRole(id);
+                                                    const updated = await api.fetchRoles();
+                                                    send({ type: 'LOAD_DATA', data: { ...data!, roles: updated } });
+                                                }}
+                                                onUpdateRole={async (id, updates) => {
+                                                    await api.updateRole(id, updates);
+                                                    const updated = await api.fetchRoles();
+                                                    send({ type: 'LOAD_DATA', data: { ...data!, roles: updated } });
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                ) : activeSection === 'timeline' ? (
                                     <TimelineView
                                         experience={data.experience}
                                         education={data.education}
@@ -306,34 +346,36 @@ export default function Home() {
                                                 const id = section.sectionKey as SectionId;
                                                 const isVisible = section.visible !== 0;
 
-                                                if (!isVisible) return null;
-
-                                                switch (id) {
-                                                    case 'roles': return (
-                                                        <section id="roles" className="space-y-8">
-                                                            <div className="space-y-1 mb-6">
-                                                                <h2 className="text-3xl font-bold tracking-tight">{t('nav.roles')}</h2>
-                                                                <div className="h-1.5 w-12 bg-green-500 rounded-full" />
-                                                            </div>
-                                                            <div className="card-editor">
-                                                                <RoleManager
-                                                                    roles={data?.roles || []}
-                                                                    activeRoleId={activeRoleId}
-                                                                    onActiveRoleChange={(id) => send({ type: 'SET_ROLE', roleId: id })}
-                                                                    onCreateRole={async (name, jobTitle) => {
-                                                                        const { id } = await api.createRole(name, jobTitle);
-                                                                        const updated = await api.fetchRoles();
-                                                                        send({ type: 'LOAD_DATA', data: { ...data!, roles: updated } });
-                                                                    }}
-                                                                    onDeleteRole={async (id) => {
-                                                                        await api.deleteRole(id);
-                                                                        const updated = await api.fetchRoles();
-                                                                        send({ type: 'LOAD_DATA', data: { ...data!, roles: updated } });
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                        </section>
+                                                const toggleVisibility = () => {
+                                                    const newOrder = data.sectionOrder.map(s => 
+                                                        s.sectionKey === section.sectionKey ? { ...s, visible: isVisible ? 0 : 1 } : s
                                                     );
+                                                    send({ type: 'REORDER_SECTIONS', sections: newOrder });
+                                                    api.reorderSections(newOrder);
+                                                };
+
+                                                if (!isVisible) {
+                                                    return (
+                                                        <div className="flex items-center justify-between mb-4 bg-white/5 p-6 rounded-2xl border border-dashed border-white/20">
+                                                            <div className="space-y-1">
+                                                                <h2 className="text-xl font-bold tracking-tight text-gray-400 capitalize">{t(`${id}.title`, { defaultValue: id })} (Hidden)</h2>
+                                                            </div>
+                                                            <button onClick={toggleVisibility} className="text-sm font-bold px-4 py-2 rounded-xl bg-blue-500/20 text-blue-400 hover:bg-white/10 transition-all border border-blue-500/30">
+                                                                👁️ Show Section
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <div className="relative group/section">
+                                                        <div className="absolute top-2 right-4 z-50 p-2 opacity-0 group-hover/section:opacity-100 transition-opacity flex justify-end">
+                                                            <button onClick={toggleVisibility} className="text-xs font-bold px-3 py-1.5 rounded-lg bg-black/80 text-gray-300 hover:text-white hover:bg-black backdrop-blur-sm border border-white/10 shadow-xl flex items-center gap-1.5 cursor-pointer">
+                                                                <span>👁️ Hide Section</span>
+                                                            </button>
+                                                        </div>
+                                                        {(() => {
+                                                            switch (id) {
                                                     case 'header': {
                                                         const lang = i18n.language;
                                                         const headerData = {
@@ -354,7 +396,6 @@ export default function Home() {
                                                                 labels={{
                                                                     title: t('header.title'),
                                                                     name: t('header.name'),
-                                                                    jobTitle: t('header.job_title'),
                                                                     email: t('header.email'),
                                                                     phone: t('header.phone'),
                                                                     location: t('header.location'),
@@ -371,9 +412,9 @@ export default function Home() {
                                                                     <h2 className="text-3xl font-bold tracking-tight">{t('education.title')}</h2>
                                                                     <div className="h-1.5 w-12 bg-blue-500 rounded-full" />
                                                                 </div>
-                                                                <button onClick={() => educationSect.addEntry({ institutionEn: 'New Institution' })} className="btn-primary">
-                                                                    <Plus size={18} /> {t('education.add')}
-                                                                </button>
+                                                                <Button onClick={() => educationSect.addEntry({ institutionEn: 'New Institution' })} variant="solid" size="sm">
+                                                                    <Plus size={18} className="mr-2" /> {t('education.add')}
+                                                                </Button>
                                                             </div>
                                                             <SortableList
                                                                 items={data.education}
@@ -448,6 +489,7 @@ export default function Home() {
                                                                             </button>
                                                                         </div>
                                                                         <RoleSelector
+                                                                            hideAll={true}
                                                                             roles={data.roles}
                                                                             selectedRoleIds={item.roleIds}
                                                                             onChange={(ids) => educationSect.updateRoles(item.id, ids)}
@@ -464,9 +506,9 @@ export default function Home() {
                                                                     <h2 className="text-3xl font-bold tracking-tight">{t('experience.title')}</h2>
                                                                     <div className="h-1.5 w-12 bg-purple-500 rounded-full" />
                                                                 </div>
-                                                                <button onClick={() => experienceSect.addEntry({ company: 'New Company' })} className="btn-primary">
-                                                                    <Plus size={18} /> {t('experience.add')}
-                                                                </button>
+                                                                <Button onClick={() => experienceSect.addEntry({ company: 'New Company' })} variant="solid" size="sm">
+                                                                    <Plus size={18} className="mr-2" /> {t('experience.add')}
+                                                                </Button>
                                                             </div>
                                                             <SortableList
                                                                 items={data.experience}
@@ -517,6 +559,7 @@ export default function Home() {
                                                                             </button>
                                                                         </div>
                                                                         <RoleSelector
+                                                                            hideAll={true}
                                                                             roles={data.roles}
                                                                             selectedRoleIds={item.roleIds}
                                                                             onChange={(ids) => experienceSect.updateRoles(item.id, ids)}
@@ -544,13 +587,18 @@ export default function Home() {
                                                                                 </select>
                                                                             </div>
                                                                             <div className="space-y-2">
-                                                                                {data.projects
-                                                                                    .filter(p => p.experienceId === item.id)
-                                                                                    .map(p => (
-                                                                                        <div key={p.id} className="flex items-center justify-between bg-white/5 p-2 rounded-lg group/project">
+                                                                                <SortableList
+                                                                                    items={data.projects.filter(p => p.experienceId === item.id)}
+                                                                                    onReorder={(newNestedOrder) => {
+                                                                                        const otherProjects = data.projects.filter(p => p.experienceId !== item.id);
+                                                                                        projectsSect.reorderEntries([...otherProjects, ...newNestedOrder]);
+                                                                                    }}
+                                                                                    renderItem={(p) => (
+                                                                                        <div className="flex items-center justify-between bg-white/5 p-2 rounded-lg group/project w-full">
                                                                                             <span className="text-sm font-medium">{p.nameEn}</span>
                                                                                             <div className="flex items-center gap-2">
                                                                                                 <RoleSelector
+                                                                                                    hideAll={true}
                                                                                                     roles={data.roles}
                                                                                                     selectedRoleIds={p.roleIds}
                                                                                                     onChange={(ids) => projectsSect.updateRoles(p.id, ids)}
@@ -564,7 +612,8 @@ export default function Home() {
                                                                                                 </button>
                                                                                             </div>
                                                                                         </div>
-                                                                                    ))}
+                                                                                    )}
+                                                                                />
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -592,25 +641,51 @@ export default function Home() {
                                                         />
                                                     );
                                                     case 'skills': return skillsSect.renderUI(id,
-                                                        <div className="space-y-1 mb-6">
+                                                        <div className="space-y-6 mb-6">
                                                             <div className="flex items-center justify-between">
                                                                 <h2 className="text-3xl font-bold tracking-tight">{t('skills.title')}</h2>
-                                                                <RoleSelector
-                                                                    roles={data.roles}
-                                                                    selectedRoleIds={data.skills[0]?.roleIds || 'all'}
-                                                                    onChange={(ids) => skillsSect.updateRoles(data.skills[0]?.id, ids)}
-                                                                />
                                                             </div>
                                                             <div className="h-1.5 w-12 bg-yellow-500 rounded-full" />
-                                                            <div className="card-editor mt-6 space-y-6">
-                                                                {['En', 'Es', 'Fr'].map(l => (
-                                                                    <div key={l} className="space-y-2">
-                                                                        <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Skills ({l})</label>
-                                                                        <textarea
-                                                                            value={(data.skills[0] as any)?.[`name${l}`] || ''}
-                                                                            onChange={e => skillsSect.updateEntry(data.skills[0]?.id, `name${l}`, e.target.value)}
-                                                                            className="input-field h-24"
-                                                                        />
+
+                                                            {/* Custom Skills Tag Manager */}
+                                                            <div className="card-editor space-y-8">
+                                                                {(['programming', 'design', 'tools'] as const).map(category => (
+                                                                    <div key={category} className="space-y-4 pt-4 first:pt-0 first:border-0 border-t border-white/5">
+                                                                        <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400">{category}</h3>
+                                                                        <div className="flex flex-wrap gap-3">
+                                                                            {data.skills.filter(s => s.category === category).map(skill => (
+                                                                                <div key={skill.id} className="group relative flex flex-col gap-2 bg-white/5 border border-white/10 rounded-xl p-3 max-w-[200px]">
+                                                                                    <div className="flex items-center justify-between gap-4">
+                                                                                        <span className="font-medium text-sm text-yellow-100">{skill.nameEn}</span>
+                                                                                        <button onClick={() => skillsSect.removeEntry(skill.id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300">
+                                                                                            <Trash2 size={14} />
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    <div className="border-t border-white/10 pt-2">
+                                                                                        <RoleSelector
+                                                                                            hideAll={true}
+                                                                                            roles={data.roles}
+                                                                                            selectedRoleIds={skill.roleIds}
+                                                                                            onChange={(ids) => skillsSect.updateRoles(skill.id, ids)}
+                                                                                            compact
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                            <div className="flex items-center gap-2">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    placeholder={`+ Add ${category}`}
+                                                                                    className="px-3 py-2 bg-black/20 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-yellow-500/50 w-40"
+                                                                                    onKeyDown={(e) => {
+                                                                                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                                                                                            skillsSect.addEntry({ nameEn: e.currentTarget.value.trim(), category });
+                                                                                            e.currentTarget.value = '';
+                                                                                        }
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 ))}
                                                             </div>
@@ -623,9 +698,9 @@ export default function Home() {
                                                                     <h2 className="text-3xl font-bold tracking-tight">{t('skills.projects')}</h2>
                                                                     <div className="h-1.5 w-12 bg-indigo-500 rounded-full" />
                                                                 </div>
-                                                                <button onClick={() => projectsSect.addEntry({ nameEn: 'New Project' })} className="btn-primary">
-                                                                    <Plus size={18} /> {t('skills.add')}
-                                                                </button>
+                                                                <Button onClick={() => projectsSect.addEntry({ nameEn: 'New Project' })} variant="solid" size="sm">
+                                                                    <Plus size={18} className="mr-2" /> {t('projects.add')}
+                                                                </Button>
                                                             </div>
                                                             <SortableList
                                                                 items={data.projects}
@@ -681,6 +756,7 @@ export default function Home() {
                                                                             </button>
                                                                         </div>
                                                                         <RoleSelector
+                                                                            hideAll={true}
                                                                             roles={data.roles}
                                                                             selectedRoleIds={item.roleIds}
                                                                             onChange={(ids) => projectsSect.updateRoles(item.id, ids)}
@@ -697,9 +773,9 @@ export default function Home() {
                                                                     <h2 className="text-3xl font-bold tracking-tight">{t('leadership.title')}</h2>
                                                                     <div className="h-1.5 w-12 bg-pink-500 rounded-full" />
                                                                 </div>
-                                                                <button onClick={() => leadershipSect.addEntry({ organizationEn: 'New Org' })} className="btn-primary">
-                                                                    <Plus size={18} /> {t('leadership.add')}
-                                                                </button>
+                                                                <Button onClick={() => leadershipSect.addEntry({ organizationEn: 'New Org' })} variant="solid" size="sm">
+                                                                    <Plus size={18} className="mr-2" /> {t('leadership.add')}
+                                                                </Button>
                                                             </div>
                                                             <SortableList
                                                                 items={data.leadership}
@@ -744,6 +820,7 @@ export default function Home() {
                                                                             </button>
                                                                         </div>
                                                                         <RoleSelector
+                                                                            hideAll={true}
                                                                             roles={data.roles}
                                                                             selectedRoleIds={item.roleIds}
                                                                             onChange={(ids) => leadershipSect.updateRoles(item.id, ids)}
@@ -760,9 +837,9 @@ export default function Home() {
                                                                     <h2 className="text-3xl font-bold tracking-tight">{t('certificates.title')}</h2>
                                                                     <div className="h-1.5 w-12 bg-teal-500 rounded-full" />
                                                                 </div>
-                                                                <button onClick={() => certificatesSect.addEntry({ nameEn: 'New Cert' })} className="btn-primary">
-                                                                    <Plus size={18} /> {t('certificates.add')}
-                                                                </button>
+                                                                <Button onClick={() => certificatesSect.addEntry({ nameEn: 'New Cert' })} variant="solid" size="sm">
+                                                                    <Plus size={18} className="mr-2" /> {t('certificates.add')}
+                                                                </Button>
                                                             </div>
                                                             <SortableList
                                                                 items={data.certificates}
@@ -770,16 +847,42 @@ export default function Home() {
                                                                 renderItem={(item) => (
                                                                     <div className="card-editor">
                                                                         <div className="flex justify-between items-start mb-6">
-                                                                            <input
-                                                                                value={item.nameEn || ''}
-                                                                                onChange={(e) => certificatesSect.updateEntry(item.id, 'nameEn', e.target.value)}
-                                                                                className="text-xl font-bold bg-transparent border-none outline-none flex-1"
-                                                                            />
-                                                                            <button onClick={() => certificatesSect.removeEntry(item.id)} className="btn-icon">
+                                                                            <div className="flex-1 space-y-4">
+                                                                                <input
+                                                                                    value={item.nameEn || ''}
+                                                                                    onChange={(e) => certificatesSect.updateEntry(item.id, 'nameEn', e.target.value)}
+                                                                                    className="text-xl font-bold bg-transparent border-none outline-none w-full"
+                                                                                    placeholder="Certificate Name (EN)"
+                                                                                />
+                                                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                                                    {(['En', 'Es', 'Fr'] as const).map(l => (
+                                                                                        <div key={l} className="space-y-3 pt-3 border-t border-white/5">
+                                                                                            <div className="space-y-1">
+                                                                                                <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Issuer ({l})</label>
+                                                                                                <input
+                                                                                                    value={item[`issuer${l}`] || ''}
+                                                                                                    onChange={(e) => certificatesSect.updateEntry(item.id, `issuer${l}`, e.target.value)}
+                                                                                                    className="input-field-compact font-medium"
+                                                                                                />
+                                                                                            </div>
+                                                                                            <div className="space-y-1">
+                                                                                                <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Description ({l})</label>
+                                                                                                <textarea
+                                                                                                    value={item[`description${l}`] || ''}
+                                                                                                    onChange={(e) => certificatesSect.updateEntry(item.id, `description${l}`, e.target.value)}
+                                                                                                    className="input-field-compact h-20 text-xs"
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </div>
+                                                                            <button onClick={() => certificatesSect.removeEntry(item.id)} className="btn-icon ml-4">
                                                                                 <Trash2 size={16} />
                                                                             </button>
                                                                         </div>
                                                                         <RoleSelector
+                                                                            hideAll={true}
                                                                             roles={data.roles}
                                                                             selectedRoleIds={item.roleIds}
                                                                             onChange={(ids) => certificatesSect.updateRoles(item.id, ids)}
@@ -796,9 +899,9 @@ export default function Home() {
                                                                     <h2 className="text-3xl font-bold tracking-tight">{t('awards.title')}</h2>
                                                                     <div className="h-1.5 w-12 bg-amber-500 rounded-full" />
                                                                 </div>
-                                                                <button onClick={() => awardsSect.addEntry({ nameEn: 'New Award' })} className="btn-primary">
-                                                                    <Plus size={18} /> {t('awards.add')}
-                                                                </button>
+                                                                <Button onClick={() => awardsSect.addEntry({ nameEn: 'New Award' })} variant="solid" size="sm">
+                                                                    <Plus size={18} className="mr-2" /> {t('awards.add')}
+                                                                </Button>
                                                             </div>
                                                             <SortableList
                                                                 items={data.awards}
@@ -816,6 +919,7 @@ export default function Home() {
                                                                             </button>
                                                                         </div>
                                                                         <RoleSelector
+                                                                            hideAll={true}
                                                                             roles={data.roles}
                                                                             selectedRoleIds={item.roleIds}
                                                                             onChange={(ids) => awardsSect.updateRoles(item.id, ids)}
@@ -840,6 +944,9 @@ export default function Home() {
                                                     );
                                                     default: return null;
                                                 }
+                                                })()}
+                                                </div>
+                                                );
                                             }}
                                         />
                                     </div>

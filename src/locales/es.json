@@ -18,6 +18,14 @@
         "timeline": "Línea de Tiempo",
         "code": "Editor de Código"
     },
+    "projects": {
+        "title": "Proyectos",
+        "add": "Añadir Proyecto",
+        "remove": "Eliminar Proyecto",
+        "projectName": "Nombre del Proyecto",
+        "projectDate": "Fecha",
+        "projectDescription": "Descripción"
+    },
     "header": {
         "title": "Información Personal",
         "name": "Nombre Completo",

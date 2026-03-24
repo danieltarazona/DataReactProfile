@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Copy, Check, FileJson, FileCode } from 'lucide-react';
+import * as yaml from 'js-yaml';
 import type { FullCVData } from '../api';
 
 interface CVCodeEditorProps {
@@ -17,9 +18,17 @@ export function CVCodeEditor({ data, onUpdate }: CVCodeEditorProps) {
 
     useEffect(() => {
         if (data) {
-            setCode(JSON.stringify(data, null, 2));
+            try {
+                if (format === 'json') {
+                    setCode(JSON.stringify(data, null, 2));
+                } else {
+                    setCode(yaml.dump(data, { indent: 2, skipInvalid: true }));
+                }
+            } catch (e) {
+                console.error("Format error", e);
+            }
         }
-    }, [data]);
+    }, [data, format]);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(code);
@@ -29,9 +38,13 @@ export function CVCodeEditor({ data, onUpdate }: CVCodeEditorProps) {
 
     const handleSave = () => {
         try {
-            const parsed = JSON.parse(code);
-            onUpdate(parsed);
-            setIsValid(true);
+            const parsed = format === 'json' ? JSON.parse(code) : yaml.load(code);
+            if (parsed && typeof parsed === 'object') {
+                onUpdate(parsed as FullCVData);
+                setIsValid(true);
+            } else {
+                setIsValid(false);
+            }
         } catch (e) {
             setIsValid(false);
         }

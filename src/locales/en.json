@@ -18,6 +18,14 @@
         "timeline": "Timeline",
         "code": "Code Editor"
     },
+    "projects": {
+        "title": "Projects",
+        "add": "Add Project",
+        "remove": "Remove Project",
+        "projectName": "Project Name",
+        "projectDate": "Date",
+        "projectDescription": "Description"
+    },
     "header": {
         "title": "Personal Information",
         "name": "Full Name",

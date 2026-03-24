@@ -15,6 +15,14 @@
         "timeline": "Chronologie",
         "code": "Éditeur de Code"
     },
+    "projects": {
+        "title": "Projets",
+        "add": "Ajouter un Projet",
+        "remove": "Supprimer le Projet",
+        "projectName": "Nom du Projet",
+        "projectDate": "Date",
+        "projectDescription": "Description"
+    },
     "header": {
         "title": "Informations Personnelles",
         "name": "Nom Complet",

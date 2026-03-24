@@ -88,6 +88,13 @@ export async function deleteRole(id: string): Promise<void> {
     await apiFetch(`/roles/${id}`, { method: 'DELETE' });
 }
 
+export async function updateRole(id: string, data: Partial<CVRole>): Promise<void> {
+    await apiFetch(`/roles/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    });
+}
+
 // ─── Header ──────────────────────────────────────────────────
 export async function updateHeader(data: Partial<CVHeaderData>): Promise<void> {
     await apiFetch('/header', {
