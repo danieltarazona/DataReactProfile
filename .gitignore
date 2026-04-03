@@ -46,3 +46,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# DB sync files
+db_sync.sql
+backups/
+cv_text.txt
+src/server/db/seed_from_pdf.sql

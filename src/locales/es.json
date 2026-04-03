@@ -7,13 +7,14 @@
     "nav": {
         "header": "Información Personal",
         "education": "Educación",
-        "skills": "Habilidades y Proyectos",
+        "skills": "Habilidades",
         "experience": "Experiencia",
         "leadership": "Liderazgo",
         "certificates": "Certificaciones",
         "roles": "Roles",
         "languages": "Idiomas",
         "awards": "Premios",
+        "hobbies": "Hobbies",
         "projects": "Proyectos",
         "timeline": "Línea de Tiempo",
         "code": "Editor de Código"
@@ -33,8 +34,7 @@
         "location": "Ubicación",
         "email": "Correo Electrónico",
         "phone": "Teléfono",
-        "github": "URL de GitHub",
-        "summary": "Resumen Profesional"
+        "github": "URL de GitHub"
     },
     "education": {
         "title": "Educación",
@@ -47,7 +47,7 @@
         "remove": "Eliminar"
     },
     "skills": {
-        "title": "Habilidades y Proyectos",
+        "title": "Habilidades",
         "programming": "Habilidades de Programación",
         "design": "Habilidades de Diseño",
         "tools": "Herramientas y Tecnologías",
@@ -125,14 +125,18 @@
         "login": "Ingresar",
         "logout": "Cerrar Sesión",
         "error": "Correo o contraseña incorrectos",
-        "loading": "Ingresando...",
-        "awards": {
-            "title": "Premios y Reconocimientos",
-            "add": "Añadir premio",
-            "name": "Nombre del premio",
-            "issuer": "Emisor",
-            "date": "Fecha",
-            "description": "Descripción"
-        }
+        "loading": "Ingresando..."
+    },
+    "awards": {
+        "title": "Premios y Reconocimientos",
+        "add": "Añadir premio",
+        "name": "Nombre del premio",
+        "issuer": "Emisor",
+        "date": "Fecha",
+        "description": "Descripción"
+    },
+    "hobbies": {
+        "title": "Hobbies e Intereses",
+        "add": "Agregar Hobby"
     }
 }

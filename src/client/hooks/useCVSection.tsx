@@ -18,7 +18,7 @@ export function useCVSection(section: keyof api.FullCVData, send: any, currentDa
 
     const addEntry = useCallback(async (initialData: Record<string, any> = {}) => {
         try {
-            await api.createEntry(section, initialData);
+            await api.createEntry(section, { roleIds: 'all', ...initialData });
             await fetchLatest();
         } catch (err) {
             console.error(`Error adding to ${section}:`, err);

@@ -7,13 +7,14 @@
     "nav": {
         "header": "Personal Info",
         "education": "Education",
-        "skills": "Skills & Projects",
+        "skills": "Skills",
         "experience": "Experience",
         "leadership": "Leadership",
         "certificates": "Certificates",
         "roles": "Roles",
         "languages": "Languages",
         "awards": "Awards",
+        "hobbies": "Hobbies",
         "projects": "Projects",
         "timeline": "Timeline",
         "code": "Code Editor"
@@ -33,8 +34,7 @@
         "location": "Location",
         "email": "Email",
         "phone": "Phone",
-        "github": "GitHub URL",
-        "summary": "Professional Summary"
+        "github": "GitHub URL"
     },
     "education": {
         "title": "Education",
@@ -47,7 +47,7 @@
         "remove": "Remove"
     },
     "skills": {
-        "title": "Skills & Projects",
+        "title": "Technical Skills",
         "programming": "Programming Skills",
         "design": "Design Skills",
         "tools": "Tools & Technologies",
@@ -59,7 +59,7 @@
         "remove": "Remove Project"
     },
     "experience": {
-        "title": "Work Experience",
+        "title": "Relevant Experience",
         "company": "Company",
         "role": "Role / Position",
         "date": "Date",
@@ -105,12 +105,12 @@
         "level": "Proficiency Level"
     },
     "levels": {
-        "A1": "A1 - Beginner",
-        "A2": "A2 - Elementary",
-        "B1": "B1 - Pre-Intermediate",
-        "B2": "B2 - Intermediate",
-        "C1": "C1 - Upper-Intermediate",
-        "C2": "C2 - Advanced",
+        "A1": "A1 Beginner",
+        "A2": "A2 Elementary",
+        "B1": "B1 Intermediate",
+        "B2": "B2 Upper-Intermediate",
+        "C1": "C1 Advanced",
+        "C2": "C2 Proficient",
         "Native": "Native"
     },
     "messages": {
@@ -122,17 +122,21 @@
         "title": "Login",
         "email": "Email",
         "password": "Password",
-        "login": "Sign In",
-        "logout": "Logout",
+        "login": "Log In",
+        "logout": "Log Out",
         "error": "Invalid email or password",
-        "loading": "Signing in...",
-        "awards": {
-            "title": "Awards & Honors",
-            "add": "Add Award",
-            "name": "Award Name",
-            "issuer": "Issuer",
-            "date": "Date",
-            "description": "Description"
-        }
+        "loading": "Logging in..."
+    },
+    "awards": {
+        "title": "Awards & Honors",
+        "add": "Add Award",
+        "name": "Award Name",
+        "issuer": "Issuer",
+        "date": "Date",
+        "description": "Description"
+    },
+    "hobbies": {
+        "title": "Hobbies & Interests",
+        "add": "Add Hobby"
     }
 }

@@ -14,6 +14,7 @@ export interface CVHeaderData {
     id: string;
     name: string;
     titleEn: string; titleEs: string; titleFr: string;
+    location: string;
     locationEn: string; locationEs: string; locationFr: string;
     email: string; phone: string; github: string;
     summaryEn: string; summaryEs: string; summaryFr: string;
@@ -49,6 +50,7 @@ export interface FullCVData {
     certificates: CVEntry[];
     languages: CVLanguageEntry[];
     awards: CVEntry[];
+    hobbies: CVEntry[];
     sectionOrder: CVSectionOrderEntry[];
 }
 

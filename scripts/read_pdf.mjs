@@ -4,7 +4,7 @@ import { PDFParse } from 'pdf-parse';
 
 async function run() {
     try {
-        const dataBuffer = fs.readFileSync('src/templates/CV.pdf');
+        const dataBuffer = fs.readFileSync('src/templates/DATA.pdf');
         const parser = new PDFParse({ data: dataBuffer });
         const result = await parser.getText();
         fs.writeFileSync('cv_text.txt', result.text);

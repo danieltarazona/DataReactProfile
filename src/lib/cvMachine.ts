@@ -26,6 +26,7 @@ type CVEvent =
     | { type: 'REMOVE_ENTRY'; section: keyof FullCVData; id: string }
     | { type: 'REORDER_ENTRIES'; section: keyof FullCVData; items: any[] }
     | { type: 'REORDER_SECTIONS'; sections: any[] }
+    | { type: 'UPDATE_ROLES'; roles: CVRole[] }
     | { type: 'SAVE' }
     | { type: 'SAVE_SUCCESS' }
     | { type: 'SAVE_ERROR'; error: string }
@@ -161,6 +162,18 @@ export const cvMachine = createMachine({
                             return {
                                 ...context.data,
                                 sectionOrder: event.sections,
+                            };
+                        },
+                        isDirty: () => true,
+                    }),
+                },
+                UPDATE_ROLES: {
+                    actions: assign({
+                        data: ({ context, event }) => {
+                            if (!context.data) return context.data;
+                            return {
+                                ...context.data,
+                                roles: event.roles,
                             };
                         },
                         isDirty: () => true,

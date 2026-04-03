@@ -13,4 +13,4 @@ export PATH="$HOME/.local/share/fnm/node-versions/$NODE_VER/installation/bin:$PA
 cd /home/data/Projects/DataKitReact/DataReactProfile
 
 echo "Starting dev server..."
-pnpm dev:all
+pnpm dev

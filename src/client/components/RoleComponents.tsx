@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus } from 'lucide-react';
 import type { CVRole } from '../api';
@@ -15,24 +15,29 @@ interface RoleSelectorProps {
  * Multi-select role badge selector for each CV entry.
  * Shows small clickable badges for each role.
  */
-export function RoleSelector({ roles, selectedRoleIds, onChange, compact, hideAll }: RoleSelectorProps) {
+export function RoleSelector({ roles, selectedRoleIds, onChange, compact }: RoleSelectorProps) {
     const selected = new Set(selectedRoleIds.split(',').map(s => s.trim()).filter(Boolean));
 
     const toggle = (roleId: string) => {
         const next = new Set(selected);
         if (next.has(roleId)) {
             next.delete(roleId);
-            // Must have at least one role
-            if (next.size === 0) next.add('all');
         } else {
             next.add(roleId);
         }
-        onChange(Array.from(next).join(','));
+        
+        // Ensure 'all' is preserved if nothing else is selected
+        const result = Array.from(next).filter(id => id !== 'all');
+        if (result.length === 0) {
+            onChange('all');
+        } else {
+            onChange(result.join(','));
+        }
     };
 
     return (
         <div className="flex flex-wrap gap-1 mt-1">
-            {roles.filter(r => hideAll ? r.id !== 'all' : true).map(role => (
+            {roles.filter(r => r.id !== 'all').map(role => (
                 <button
                     key={role.id}
                     type="button"
@@ -71,6 +76,30 @@ export function RoleManager({ roles, activeRoleId, onActiveRoleChange, onCreateR
     const [newName, setNewName] = useState('');
     const [newJobTitle, setNewJobTitle] = useState('');
 
+    // Local state for instant editing of the ACTIVE role
+    const activeRole = roles.find(r => r.id === activeRoleId && r.id !== 'all');
+    const [localName, setLocalName] = useState(activeRole?.name || '');
+    const [localJobTitle, setLocalJobTitle] = useState(activeRole?.jobTitle || '');
+
+    // Sync local state when active role changes
+    useEffect(() => {
+        if (activeRole) {
+            setLocalName(activeRole.name);
+            setLocalJobTitle(activeRole.jobTitle);
+        }
+    }, [activeRoleId, roles]);
+
+    // Debounced sync to global state/API
+    useEffect(() => {
+        if (!activeRole) return;
+        const timer = setTimeout(() => {
+            if (localName !== activeRole.name || localJobTitle !== activeRole.jobTitle) {
+                onUpdateRole(activeRoleId, { name: localName, jobTitle: localJobTitle });
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [localName, localJobTitle, activeRoleId, onUpdateRole, activeRole]);
+
     const handleCreate = () => {
         if (!newName.trim()) return;
         onCreateRole(newName.trim(), newJobTitle.trim());
@@ -101,8 +130,14 @@ export function RoleManager({ roles, activeRoleId, onActiveRoleChange, onCreateR
                         )}
                         {role.id !== 'all' && (
                             <span
-                                onClick={(e) => { e.stopPropagation(); onDeleteRole(role.id); }}
-                                className="ml-2 text-red-400 opacity-0 group-hover:opacity-100 hover:text-red-300 transition-opacity cursor-pointer inline-flex items-center"
+                                onClick={(e) => { 
+                                    e.stopPropagation(); 
+                                    if (window.confirm(`Are you sure you want to delete the role "${role.name}"?`)) {
+                                        onDeleteRole(role.id); 
+                                    }
+                                }}
+                                className="ml-2 text-red-400 opacity-0 group-hover:opacity-100 hover:text-red-300 transition-all cursor-pointer inline-flex items-center p-1 hover:bg-white/10 rounded-full"
+                                title="Delete role"
                             >
                                 <X size={14} />
                             </span>
@@ -120,10 +155,21 @@ export function RoleManager({ roles, activeRoleId, onActiveRoleChange, onCreateR
             {roles.find(r => r.id === activeRoleId && r.id !== 'all') && (
                 <div className="mt-4 p-4 border border-white/10 rounded-xl bg-white/5 flex gap-4 items-end max-w-md">
                     <div className="flex-1 space-y-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Edit Role Title</label>
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Edit Role Name</label>
                         <input
-                            value={roles.find(r => r.id === activeRoleId)?.jobTitle || ''}
-                            onChange={(e) => onUpdateRole(activeRoleId, { jobTitle: e.target.value })}
+                            value={localName}
+                            onChange={(e) => setLocalName(e.target.value)}
+                            onBlur={() => onUpdateRole(activeRoleId, { name: localName, jobTitle: localJobTitle })}
+                            placeholder="e.g. Mobile"
+                            className="w-full px-4 py-2 rounded-lg bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:border-blue-500 transition-all"
+                        />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Edit Job Title</label>
+                        <input
+                            value={localJobTitle}
+                            onChange={(e) => setLocalJobTitle(e.target.value)}
+                            onBlur={() => onUpdateRole(activeRoleId, { name: localName, jobTitle: localJobTitle })}
                             placeholder="e.g. Senior Mobile Developer"
                             className="w-full px-4 py-2 rounded-lg bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:border-blue-500 transition-all"
                         />

@@ -7,10 +7,11 @@
     "nav": {
         "header": "Informations Personnelles",
         "education": "Formation",
-        "skills": "Compétences et Projets",
+        "skills": "Compétences",
         "certificates": "Certificats",
         "languages": "Langues",
         "awards": "Prix",
+        "hobbies": "Loisirs",
         "projects": "Projets",
         "timeline": "Chronologie",
         "code": "Éditeur de Code"
@@ -30,8 +31,7 @@
         "location": "Localisation",
         "email": "E-mail",
         "phone": "Téléphone",
-        "github": "URL GitHub",
-        "summary": "Résumé Professionnel"
+        "github": "URL GitHub"
     },
     "education": {
         "title": "Formation",
@@ -44,7 +44,7 @@
         "remove": "Supprimer"
     },
     "skills": {
-        "title": "Compétences et Projets",
+        "title": "Compétences",
         "programming": "Compétences en Programmation",
         "design": "Compétences en Design",
         "tools": "Outils et Technologies",
@@ -120,16 +120,20 @@
         "email": "E-mail",
         "password": "Mot de passe",
         "login": "Se connecter",
-        "logout": "Déconnexion",
+        "logout": "Se déconnecter",
         "error": "E-mail ou mot de passe incorrect",
-        "loading": "Connexion en cours...",
-        "awards": {
-            "title": "Prix et Distinctions",
-            "add": "Ajouter un prix",
-            "name": "Nom du prix",
-            "issuer": "Émetteur",
-            "date": "Date",
-            "description": "Description"
-        }
+        "loading": "Connexion en cours..."
+    },
+    "awards": {
+        "title": "Prix et distinctions",
+        "add": "Ajouter un prix",
+        "name": "Nom du prix",
+        "issuer": "Éditeur",
+        "date": "Date",
+        "description": "Description"
+    },
+    "hobbies": {
+        "title": "Loisirs et Intérêts",
+        "add": "Ajouter un Loisir"
     }
 }

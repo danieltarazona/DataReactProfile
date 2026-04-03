@@ -137,7 +137,7 @@ const esc = (str) => str ? str.toString().replace(/'/g, "''") : '';
 
 let sql = `-- Generated SQL from PDF\n`;
 sql += `DELETE FROM DataReactProfile_Header;\n`;
-sql += `INSERT INTO DataReactProfile_Header (id, name, title_en, title_es, title_fr, location_en, location_es, location_fr, email, phone, github, summary_en, summary_es, summary_fr) VALUES ('${esc(data.header.id)}', '${esc(data.header.name)}', '${esc(data.header.title)}', '${esc(data.header.title)}', '${esc(data.header.title)}', '${esc(data.header.location)}', '${esc(data.header.location)}', '${esc(data.header.location)}', '${esc(data.header.email)}', '${esc(data.header.phone)}', '${esc(data.header.github)}', '', '', '');\n`;
+sql += `INSERT INTO DataReactProfile_Header (id, name, title_en, title_es, title_fr, location_en, location_es, location_fr, email, phone, github) VALUES ('${esc(data.header.id)}', '${esc(data.header.name)}', '${esc(data.header.title)}', '${esc(data.header.title)}', '${esc(data.header.title)}', '${esc(data.header.location)}', '${esc(data.header.location)}', '${esc(data.header.location)}', '${esc(data.header.email)}', '${esc(data.header.phone)}', '${esc(data.header.github)}');\n`;
 
 sql += `DELETE FROM DataReactProfile_Roles;\n`;
 sql += `INSERT INTO DataReactProfile_Roles (id, name, job_title, sort_order) VALUES ('all', 'All', 'Senior Developer', 0);\n`;

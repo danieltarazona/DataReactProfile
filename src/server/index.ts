@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { serveStatic } from 'hono/cloudflare-pages'
+import { serveStatic } from 'hono/cloudflare-workers'
 import { mountAuthRoutes } from '@datakit/cloudflare-login'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq, asc } from 'drizzle-orm'
@@ -15,6 +15,9 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>()
 
+// Health check
+app.get('/api/health', (c) => c.json({ status: 'ok', time: new Date().toISOString() }))
+
 // Auth routes
 mountAuthRoutes(app, { basePath: '/api/auth' })
 
@@ -28,7 +31,7 @@ function now(): string {
     return new Date().toISOString()
 }
 
-// ─── Migration endpoint ──────────────────────────────────────
+// ─── Migration endpoint (non-destructive) ───────────────────
 app.post('/api/cv/migrate', async (c) => {
     const db = c.env.DB
     const statements = MIGRATION_SQL.split(';').map(s => s.trim()).filter(Boolean)
@@ -37,9 +40,9 @@ app.post('/api/cv/migrate', async (c) => {
     }
     const seedStatements = SEED_SQL.split(';').map(s => s.trim()).filter(Boolean)
     for (const stmt of seedStatements) {
-        await db.prepare(stmt).run()
+        try { await db.prepare(stmt).run() } catch(_) { /* OR IGNORE handles dupes */ }
     }
-    return c.json({ success: true, message: 'Migration and seed complete' })
+    return c.json({ success: true, message: 'Migration complete (non-destructive)' })
 })
 
 // ─── GET /api/cv/all — Full CV data ─────────────────────────
@@ -58,6 +61,7 @@ app.get('/api/cv/all', async (c) => {
             certificatesData,
             languagesData,
             awardsData,
+            hobbiesData,
             sectionOrderData,
         ] = await Promise.all([
             db.select().from(schema.roles).orderBy(asc(schema.roles.sortOrder)),
@@ -70,6 +74,7 @@ app.get('/api/cv/all', async (c) => {
             db.select().from(schema.certificates).orderBy(asc(schema.certificates.sortOrder)),
             db.select().from(schema.languages).orderBy(asc(schema.languages.sortOrder)),
             db.select().from(schema.awards).orderBy(asc(schema.awards.sortOrder)),
+            db.select().from(schema.hobbies).orderBy(asc(schema.hobbies.sortOrder)),
             db.select().from(schema.sectionOrder).orderBy(asc(schema.sectionOrder.sortOrder)),
         ])
         return c.json({
@@ -83,6 +88,7 @@ app.get('/api/cv/all', async (c) => {
             certificates: certificatesData,
             languages: languagesData,
             awards: awardsData,
+            hobbies: hobbiesData,
             sectionOrder: sectionOrderData,
         })
     } catch (err: any) {
@@ -93,10 +99,10 @@ app.get('/api/cv/all', async (c) => {
             for (const stmt of migrationStatements) {
                 await c.env.DB.prepare(stmt).run()
             }
-            // Run seed
+            // Run seed (OR IGNORE handles duplicates)
             const seedStatements = SEED_SQL.split(';').map(s => s.trim()).filter(Boolean)
             for (const stmt of seedStatements) {
-                await c.env.DB.prepare(stmt).run()
+                try { await c.env.DB.prepare(stmt).run() } catch(_) { /* OK */ }
             }
             // Retry by redirecting back to same URL
             console.log('Migration complete, retrying request...')
@@ -152,6 +158,8 @@ const sectionMap: Record<string, any> = {
     certificates: schema.certificates,
     languages: schema.languages,
     awards: schema.awards,
+    hobbies: schema.hobbies,
+    roles: schema.roles,
 }
 
 // CREATE
@@ -211,7 +219,19 @@ app.patch('/api/cv/reorder', async (c) => {
     return c.json({ success: true })
 })
 
-// Serve static assets
-app.use('/*', serveStatic())
+// ─── SPA Fallback (MUST BE LAST) ────────────────────────────────
+app.get('*', async (c) => {
+    const isApi = c.req.path.startsWith('/api')
+    if (!isApi && c.env.ASSETS) {
+        try {
+            const url = new URL(c.req.url)
+            url.pathname = '/index.html'
+            return await c.env.ASSETS.fetch(new Request(url.toString(), c.req.raw))
+        } catch (err) {
+            return c.text('Asset fetch error', 500)
+        }
+    }
+    return c.json({ error: 'Not Found' }, 404)
+})
 
 export default app

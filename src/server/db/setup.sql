@@ -1,18 +1,8 @@
--- Reset schema
-DROP TABLE IF EXISTS DataReactProfile_Roles;
-DROP TABLE IF EXISTS DataReactProfile_Header;
-DROP TABLE IF EXISTS DataReactProfile_Education;
-DROP TABLE IF EXISTS DataReactProfile_Experience;
-DROP TABLE IF EXISTS DataReactProfile_Projects;
-DROP TABLE IF EXISTS DataReactProfile_Skills;
-DROP TABLE IF EXISTS DataReactProfile_Leadership;
-DROP TABLE IF EXISTS DataReactProfile_Certificates;
-DROP TABLE IF EXISTS DataReactProfile_Languages;
-DROP TABLE IF EXISTS DataReactProfile_Awards;
-DROP TABLE IF EXISTS DataReactProfile_SectionOrder;
+-- Non-destructive schema setup — safe to run on every startup.
+-- Uses CREATE TABLE IF NOT EXISTS so existing data is preserved.
 
 -- Roles
-CREATE TABLE DataReactProfile_Roles (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Roles (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     job_title TEXT NOT NULL DEFAULT '',
@@ -22,7 +12,7 @@ CREATE TABLE DataReactProfile_Roles (
 );
 
 -- Header
-CREATE TABLE DataReactProfile_Header (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Header (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL DEFAULT '',
     title_en TEXT NOT NULL DEFAULT '',
@@ -41,7 +31,7 @@ CREATE TABLE DataReactProfile_Header (
 );
 
 -- Education
-CREATE TABLE DataReactProfile_Education (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Education (
     id TEXT PRIMARY KEY,
     institution_en TEXT NOT NULL DEFAULT '',
     institution_es TEXT NOT NULL DEFAULT '',
@@ -72,7 +62,7 @@ CREATE TABLE DataReactProfile_Education (
 );
 
 -- Experience
-CREATE TABLE DataReactProfile_Experience (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Experience (
     id TEXT PRIMARY KEY,
     company TEXT NOT NULL DEFAULT '',
     role_en TEXT NOT NULL DEFAULT '',
@@ -93,7 +83,7 @@ CREATE TABLE DataReactProfile_Experience (
 );
 
 -- Projects
-CREATE TABLE DataReactProfile_Projects (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Projects (
     id TEXT PRIMARY KEY,
     experience_id TEXT,
     name_en TEXT NOT NULL DEFAULT '',
@@ -115,7 +105,7 @@ CREATE TABLE DataReactProfile_Projects (
 );
 
 -- Skills
-CREATE TABLE DataReactProfile_Skills (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Skills (
     id TEXT PRIMARY KEY,
     name_en TEXT NOT NULL DEFAULT '',
     name_es TEXT NOT NULL DEFAULT '',
@@ -128,7 +118,7 @@ CREATE TABLE DataReactProfile_Skills (
 );
 
 -- Leadership
-CREATE TABLE DataReactProfile_Leadership (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Leadership (
     id TEXT PRIMARY KEY,
     organization_en TEXT NOT NULL DEFAULT '',
     organization_es TEXT NOT NULL DEFAULT '',
@@ -151,7 +141,7 @@ CREATE TABLE DataReactProfile_Leadership (
 );
 
 -- Certificates
-CREATE TABLE DataReactProfile_Certificates (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Certificates (
     id TEXT PRIMARY KEY,
     name_en TEXT NOT NULL DEFAULT '',
     name_es TEXT NOT NULL DEFAULT '',
@@ -163,6 +153,9 @@ CREATE TABLE DataReactProfile_Certificates (
     description_en TEXT NOT NULL DEFAULT '',
     description_es TEXT NOT NULL DEFAULT '',
     description_fr TEXT NOT NULL DEFAULT '',
+    location_en TEXT NOT NULL DEFAULT '',
+    location_es TEXT NOT NULL DEFAULT '',
+    location_fr TEXT NOT NULL DEFAULT '',
     sort_order INTEGER NOT NULL DEFAULT 0,
     role_ids TEXT NOT NULL DEFAULT 'all',
     created_at TEXT NOT NULL DEFAULT '',
@@ -170,7 +163,7 @@ CREATE TABLE DataReactProfile_Certificates (
 );
 
 -- Languages
-CREATE TABLE DataReactProfile_Languages (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Languages (
     id TEXT PRIMARY KEY,
     name_en TEXT NOT NULL DEFAULT '',
     name_es TEXT NOT NULL DEFAULT '',
@@ -183,7 +176,7 @@ CREATE TABLE DataReactProfile_Languages (
 );
 
 -- Awards
-CREATE TABLE DataReactProfile_Awards (
+CREATE TABLE IF NOT EXISTS DataReactProfile_Awards (
     id TEXT PRIMARY KEY,
     name_en TEXT NOT NULL DEFAULT '',
     name_es TEXT NOT NULL DEFAULT '',
@@ -195,6 +188,9 @@ CREATE TABLE DataReactProfile_Awards (
     description_en TEXT NOT NULL DEFAULT '',
     description_es TEXT NOT NULL DEFAULT '',
     description_fr TEXT NOT NULL DEFAULT '',
+    location_en TEXT NOT NULL DEFAULT '',
+    location_es TEXT NOT NULL DEFAULT '',
+    location_fr TEXT NOT NULL DEFAULT '',
     sort_order INTEGER NOT NULL DEFAULT 0,
     role_ids TEXT NOT NULL DEFAULT 'all',
     created_at TEXT NOT NULL DEFAULT '',
@@ -202,7 +198,7 @@ CREATE TABLE DataReactProfile_Awards (
 );
 
 -- Section Order
-CREATE TABLE DataReactProfile_SectionOrder (
+CREATE TABLE IF NOT EXISTS DataReactProfile_SectionOrder (
     id TEXT PRIMARY KEY,
     section_key TEXT NOT NULL UNIQUE,
     sort_order INTEGER NOT NULL DEFAULT 0,
@@ -210,21 +206,36 @@ CREATE TABLE DataReactProfile_SectionOrder (
     updated_at TEXT NOT NULL DEFAULT ''
 );
 
--- SEED DATA
-INSERT INTO DataReactProfile_Roles (id, name, job_title, sort_order, created_at, updated_at)
+-- Hobbies
+CREATE TABLE IF NOT EXISTS DataReactProfile_Hobbies (
+    id TEXT PRIMARY KEY,
+    nameEn TEXT NOT NULL DEFAULT '',
+    nameEs TEXT NOT NULL DEFAULT '',
+    nameFr TEXT NOT NULL DEFAULT '',
+    descriptionEn TEXT NOT NULL DEFAULT '',
+    descriptionEs TEXT NOT NULL DEFAULT '',
+    descriptionFr TEXT NOT NULL DEFAULT '',
+    sortOrder INTEGER NOT NULL DEFAULT 0,
+    roleIds TEXT NOT NULL DEFAULT 'all',
+    createdAt TEXT NOT NULL DEFAULT '',
+    updatedAt TEXT NOT NULL DEFAULT ''
+);
+
+-- Structural defaults (INSERT OR IGNORE — only inserts if missing)
+INSERT OR IGNORE INTO DataReactProfile_Roles (id, name, job_title, sort_order, created_at, updated_at)
 VALUES ('all', 'All', '', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO DataReactProfile_Header (id, name, updated_at)
+INSERT OR IGNORE INTO DataReactProfile_Header (id, name, updated_at)
 VALUES ('default', '', CURRENT_TIMESTAMP);
 
-INSERT INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES
-('sec-roles', 'roles', 0, 1, CURRENT_TIMESTAMP),
-('sec-header', 'header', 1, 1, CURRENT_TIMESTAMP),
-('sec-education', 'education', 2, 1, CURRENT_TIMESTAMP),
-('sec-skills', 'skills', 3, 1, CURRENT_TIMESTAMP),
-('sec-experience', 'experience', 4, 1, CURRENT_TIMESTAMP),
-('sec-projects', 'projects', 5, 1, CURRENT_TIMESTAMP),
-('sec-leadership', 'leadership', 6, 1, CURRENT_TIMESTAMP),
-('sec-certificates', 'certificates', 7, 1, CURRENT_TIMESTAMP),
-('sec-languages', 'languages', 8, 1, CURRENT_TIMESTAMP),
-('sec-awards', 'awards', 9, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-roles', 'roles', 0, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-header', 'header', 1, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-education', 'education', 2, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-skills', 'skills', 3, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-experience', 'experience', 4, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-projects', 'projects', 5, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-leadership', 'leadership', 6, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-certificates', 'certificates', 7, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-languages', 'languages', 8, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-awards', 'awards', 9, 1, CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES ('sec-hobbies', 'hobbies', 10, 1, CURRENT_TIMESTAMP);
