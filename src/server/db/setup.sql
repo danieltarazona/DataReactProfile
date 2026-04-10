@@ -24,9 +24,8 @@ CREATE TABLE IF NOT EXISTS DataReactProfile_Header (
     email TEXT NOT NULL DEFAULT '',
     phone TEXT NOT NULL DEFAULT '',
     github TEXT NOT NULL DEFAULT '',
-    summary_en TEXT NOT NULL DEFAULT '',
-    summary_es TEXT NOT NULL DEFAULT '',
-    summary_fr TEXT NOT NULL DEFAULT '',
+    linkedin TEXT NOT NULL DEFAULT '',
+    website TEXT NOT NULL DEFAULT '',
     updated_at TEXT NOT NULL DEFAULT ''
 );
 

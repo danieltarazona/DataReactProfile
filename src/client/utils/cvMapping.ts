@@ -26,7 +26,15 @@ export function mapCVDataToPreview(data: api.FullCVData, activeRoleId: string, l
         : ['education', 'skills', 'experience', 'projects', 'leadership', 'certificates', 'languages', 'awards'];
 
     const activeRole = (data.roles || []).find(r => r.id === activeRoleId);
-    const headerTitle = activeRole?.jobTitle || api.getLocalizedField(data.header, 'title', lang);
+    let headerTitle: string;
+    if (!activeRoleId || activeRoleId === 'all') {
+        const allTitles = (data.roles || [])
+            .map(r => (r.jobTitle || '').trim())
+            .filter(Boolean);
+        headerTitle = allTitles.length > 0 ? allTitles.join(' / ') : api.getLocalizedField(data.header, 'title', lang);
+    } else {
+        headerTitle = activeRole?.jobTitle || '';
+    }
 
     const previewData = {
         header: {
@@ -36,7 +44,8 @@ export function mapCVDataToPreview(data: api.FullCVData, activeRoleId: string, l
             email: data.header.email,
             phone: data.header.phone,
             github: data.header.github,
-            summary: api.getLocalizedField(data.header as any, 'summary', lang),
+            linkedin: data.header.linkedin || '',
+            website: data.header.website || '',
         },
         education: visibleSections.includes('education')
             ? (data.education || []).filter(isVisible).map(it => ({

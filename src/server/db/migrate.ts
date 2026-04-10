@@ -43,9 +43,8 @@ CREATE TABLE IF NOT EXISTS DataReactProfile_Header (
     email TEXT NOT NULL DEFAULT '',
     phone TEXT NOT NULL DEFAULT '',
     github TEXT NOT NULL DEFAULT '',
-    summary_en TEXT NOT NULL DEFAULT '',
-    summary_es TEXT NOT NULL DEFAULT '',
-    summary_fr TEXT NOT NULL DEFAULT '',
+    linkedin TEXT NOT NULL DEFAULT '',
+    website TEXT NOT NULL DEFAULT '',
     updated_at TEXT NOT NULL DEFAULT ''
 );
 
@@ -266,3 +265,12 @@ INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order
 INSERT OR IGNORE INTO DataReactProfile_SectionOrder (id, section_key, sort_order, visible, updated_at) VALUES
 ('sec-hobbies', 'hobbies', 10, 1, datetime('now'));
 `;
+
+/**
+ * Column migrations — ALTER TABLE statements run individually with try/catch.
+ * Safe to re-run (duplicate column errors are silently ignored).
+ */
+export const COLUMN_MIGRATIONS: string[] = [
+    "ALTER TABLE DataReactProfile_Header ADD COLUMN linkedin TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE DataReactProfile_Header ADD COLUMN website TEXT NOT NULL DEFAULT ''",
+];

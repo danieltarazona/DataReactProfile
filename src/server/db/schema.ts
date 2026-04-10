@@ -23,9 +23,8 @@ export const header = sqliteTable('DataReactProfile_Header', {
     email: text('email').notNull().default(''),
     phone: text('phone').notNull().default(''),
     github: text('github').notNull().default(''),
-    summaryEn: text('summary_en').notNull().default(''),
-    summaryEs: text('summary_es').notNull().default(''),
-    summaryFr: text('summary_fr').notNull().default(''),
+    linkedin: text('linkedin').notNull().default(''),
+    website: text('website').notNull().default(''),
     updatedAt: text('updated_at').notNull().default(''),
 });
 

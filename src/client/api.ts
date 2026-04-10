@@ -17,7 +17,7 @@ export interface CVHeaderData {
     location: string;
     locationEn: string; locationEs: string; locationFr: string;
     email: string; phone: string; github: string;
-    summaryEn: string; summaryEs: string; summaryFr: string;
+    linkedin: string; website: string;
 }
 
 export interface CVEntry {

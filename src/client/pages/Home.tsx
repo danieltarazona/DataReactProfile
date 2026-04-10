@@ -122,12 +122,21 @@ export default function Home() {
 
     const handleExport = async (format: 'json' | 'yaml' | 'pdf') => {
         if (!data) return;
+
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const localeMap: Record<string, string> = { en: 'EN-US', es: 'ES-ES', fr: 'FR-FR' };
+        const langCode = localeMap[i18n.language.toLowerCase()] || i18n.language.toUpperCase();
+        const fileNameBase = `Daniel_Tarazona_${langCode}_${year}_${month}_${day}`;
+
         if (format === 'json') {
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `cv_${i18n.language}.json`;
+            a.download = `${fileNameBase}.json`;
             a.click();
         } else if (format === 'yaml') {
             const yaml = await import('js-yaml');
@@ -135,10 +144,16 @@ export default function Home() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `cv_${i18n.language}.yaml`;
+            a.download = `${fileNameBase}.yaml`;
             a.click();
         } else if (format === 'pdf') {
+            const originalTitle = document.title;
+            document.title = fileNameBase;
             window.print();
+            // Restore title after a short delay
+            setTimeout(() => {
+                document.title = originalTitle;
+            }, 1000);
         }
     };
 
@@ -390,6 +405,7 @@ export default function Home() {
                                 {debouncedPreviewData ? (
                                     <LocalPDFPreviewPanel 
                                         data={debouncedPreviewData} 
+                                        lang={i18n.language}
                                         labels={{
                                             preview: t('common.preview'),
                                             resume: t('common.resume'),

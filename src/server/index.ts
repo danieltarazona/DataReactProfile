@@ -4,7 +4,7 @@ import { mountAuthRoutes } from '@datakit/cloudflare-login'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq, asc } from 'drizzle-orm'
 import * as schema from './db/schema'
-import { MIGRATION_SQL, SEED_SQL } from './db/migrate'
+import { MIGRATION_SQL, SEED_SQL, COLUMN_MIGRATIONS } from './db/migrate'
 
 type Bindings = {
     DB: D1Database
@@ -41,6 +41,10 @@ app.post('/api/cv/migrate', async (c) => {
     const seedStatements = SEED_SQL.split(';').map(s => s.trim()).filter(Boolean)
     for (const stmt of seedStatements) {
         try { await db.prepare(stmt).run() } catch(_) { /* OR IGNORE handles dupes */ }
+    }
+    // Run column migrations individually
+    for (const stmt of COLUMN_MIGRATIONS) {
+        try { await db.prepare(stmt).run() } catch(_) { /* Ignore 'duplicate column' errors */ }
     }
     return c.json({ success: true, message: 'Migration complete (non-destructive)' })
 })
@@ -102,6 +106,10 @@ app.get('/api/cv/all', async (c) => {
             // Run seed (OR IGNORE handles duplicates)
             const seedStatements = SEED_SQL.split(';').map(s => s.trim()).filter(Boolean)
             for (const stmt of seedStatements) {
+                try { await c.env.DB.prepare(stmt).run() } catch(_) { /* OK */ }
+            }
+            // Run column migrations
+            for (const stmt of COLUMN_MIGRATIONS) {
                 try { await c.env.DB.prepare(stmt).run() } catch(_) { /* OK */ }
             }
             // Retry by redirecting back to same URL
@@ -220,8 +228,10 @@ app.patch('/api/cv/reorder', async (c) => {
 })
 
 // ─── SPA Fallback (MUST BE LAST) ────────────────────────────────
-app.get('*', async (c) => {
+app.get('*', async (c, next) => {
     const isApi = c.req.path.startsWith('/api')
+    
+    // In production, serve index.html for non-API routes
     if (!isApi && c.env.ASSETS) {
         try {
             const url = new URL(c.req.url)
@@ -231,7 +241,15 @@ app.get('*', async (c) => {
             return c.text('Asset fetch error', 500)
         }
     }
-    return c.json({ error: 'Not Found' }, 404)
+
+    // In development (no ASSETS binding) or for API routes,
+    // let Hono's other routes or Vite handle it.
+    if (isApi) {
+        return c.json({ error: 'Not Found' }, 404)
+    }
+
+    // For any other non-API route in dev, call next() to let Vite handle it
+    return await next()
 })
 
 export default app

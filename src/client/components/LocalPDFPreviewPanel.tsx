@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Document, Page, Text, View, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font, BlobProvider, Svg, Path } from '@react-pdf/renderer';
 
 // Types (mirrored from core since we can't easily import from the library's internal types)
 export interface PDFPreviewPanelLabels {
@@ -20,7 +20,17 @@ export interface PDFPreviewPanelLabels {
     hobbies: string;
 }
 
-export function CVDocument({ data, labels, theme }: any) {
+export function CVDocument({ data, labels, theme, lang }: any) {
+    const localeMap: Record<string, string> = { en: 'EN-US', es: 'ES-ES', fr: 'FR-FR' };
+    const pdfTitle = useMemo(() => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const langCode = localeMap[(lang || 'en').toLowerCase()] || (lang || 'en').toUpperCase();
+        return `Daniel_Tarazona_${langCode}_${year}_${month}_${day}.pdf`;
+    }, [lang]);
+
     const styles = useMemo(() => StyleSheet.create({
         page: {
             padding: theme.page.padding,
@@ -44,10 +54,10 @@ export function CVDocument({ data, labels, theme }: any) {
         },
         header: {
             textAlign: theme.type === 'columns' ? 'left' : 'center',
-            marginBottom: 16,
+            marginBottom: 0,
             borderBottomWidth: theme.type === 'columns' ? 1 : 0,
             borderBottomColor: '#eee',
-            paddingBottom: 10,
+            paddingBottom: 2,
         },
         name: {
             ...theme.typography.name,
@@ -105,17 +115,63 @@ export function CVDocument({ data, labels, theme }: any) {
         },
     }), [theme]);
 
-    const renderHeader = () => (
-        <View style={styles.header}>
-            <Text style={styles.name}>{data.header.name || 'Your Name'}</Text>
-            {data.header.title && <Text style={styles.title}>{data.header.title}</Text>}
-            <Text style={styles.contact}>
-                {[data.header.location, data.header.email, data.header.phone, data.header.github]
-                    .filter(Boolean)
-                    .join(theme.type === 'columns' ? '\n' : ' • ')}
-            </Text>
-        </View>
+    // SVG icons for PDF rendering
+    const GitHubIcon = ({ size = 9, color = '#333' }: { size?: number; color?: string }) => (
+        <Svg viewBox="0 0 24 24" style={{ width: size, height: size }}>
+            <Path fill={color} d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12 24 5.37 18.63 0 12 0z" />
+        </Svg>
     );
+
+    const LinkedInIcon = ({ size = 9, color = '#333' }: { size?: number; color?: string }) => (
+        <Svg viewBox="0 0 24 24" style={{ width: size, height: size }}>
+            <Path fill={color} d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </Svg>
+    );
+
+    const GlobeIcon = ({ size = 9, color = '#333' }: { size?: number; color?: string }) => (
+        <Svg viewBox="0 0 24 24" style={{ width: size, height: size }}>
+            <Path fill="none" stroke={color} strokeWidth={2} d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+            <Path fill="none" stroke={color} strokeWidth={2} d="M2 12h20" />
+            <Path fill="none" stroke={color} strokeWidth={2} d="M12 2c2.5 3 4 6.5 4 10s-1.5 7-4 10c-2.5-3-4-6.5-4-10s1.5-7 4-10z" />
+        </Svg>
+    );
+
+    const renderHeader = () => {
+        const linkFontSize = (theme.typography.contact?.fontSize || 9) - 1;
+        const iconSize = linkFontSize;
+        const iconColor = theme.page.color || '#333';
+
+        const linkItems: { icon: React.ReactNode; label: string }[] = [];
+        if (data.header.github) linkItems.push({ icon: <GitHubIcon size={iconSize} color={iconColor} />, label: data.header.github });
+        if (data.header.linkedin) linkItems.push({ icon: <LinkedInIcon size={iconSize} color={iconColor} />, label: data.header.linkedin });
+        if (data.header.website) linkItems.push({ icon: <GlobeIcon size={iconSize} color={iconColor} />, label: data.header.website });
+
+        return (
+            <View style={styles.header}>
+                <Text style={styles.name}>{data.header.name || 'Your Name'}</Text>
+                {data.header.title && <Text style={styles.title}>{data.header.title}</Text>}
+                <Text style={styles.contact}>
+                    {[data.header.location, data.header.email, data.header.phone]
+                        .filter(Boolean)
+                        .join(theme.type === 'columns' ? '\n' : ' \u2022 ')}
+                </Text>
+                {linkItems.length > 0 && (
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 0, gap: 14 }}>
+                        {linkItems.map((link, i) => (
+                            <View key={i} style={{ flexDirection: 'row', gap: 3 }}>
+                                <View style={{ width: iconSize, height: linkFontSize, position: 'relative', top: 1.5 }}>
+                                    {link.icon}
+                                </View>
+                                <Text style={{ ...styles.contact, fontSize: linkFontSize, lineHeight: 1 }}>
+                                    {link.label}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                )}
+            </View>
+        );
+    };
 
     const renderEducation = () => data.education && data.education.length > 0 && (
         <View style={styles.section} minPresence={45}>
@@ -297,23 +353,11 @@ export function CVDocument({ data, labels, theme }: any) {
     );
 
     const renderHobbies = () => data.hobbies && data.hobbies.length > 0 && (
-        <View style={styles.section} minPresence={40}>
+        <View style={styles.section} minPresence={20}>
             <Text style={styles.sectionTitle}>{labels.hobbies}</Text>
-            {data.hobbies.map((hobby: any, index: number) => (
-                <View key={index} style={hobby.description || hobby.location ? styles.item : { marginBottom: 4 }}>
-                    <View style={styles.row}>
-                        <View style={styles.rowLeft}>
-                            <Text style={styles.itemTitle}>{hobby.name}</Text>
-                        </View>
-                        {hobby.location && (
-                            <View style={styles.rowRight}>
-                                <Text style={styles.itemLocation}>{hobby.location}</Text>
-                            </View>
-                        )}
-                    </View>
-                    {hobby.description && <Text style={styles.description}>{hobby.description}</Text>}
-                </View>
-            ))}
+            <Text style={{ ...styles.description, fontWeight: 'normal' }}>
+                {data.hobbies.map((h: any) => h.name).filter(Boolean).join(', ')}
+            </Text>
         </View>
     );
 
@@ -346,7 +390,7 @@ export function CVDocument({ data, labels, theme }: any) {
 
     if (theme.type === 'columns') {
         return (
-            <Document>
+            <Document title={pdfTitle}>
                 <Page size="A4" style={styles.page}>
                     {renderHeader()}
                     <View style={styles.columnsContainer}>
@@ -369,7 +413,7 @@ export function CVDocument({ data, labels, theme }: any) {
     }
 
     return (
-        <Document>
+        <Document title={pdfTitle}>
             <Page size="A4" style={styles.page}>
                 {renderHeader()}
                 {renderEducation()}
@@ -385,22 +429,59 @@ export function CVDocument({ data, labels, theme }: any) {
     );
 }
 
-export function LocalPDFPreviewPanel({ data, labels, theme }: any) {
+export function LocalPDFPreviewPanel({ data, labels, theme, lang }: any) {
+    const localeMap: Record<string, string> = { en: 'EN-US', es: 'ES-ES', fr: 'FR-FR' };
+    const fileName = useMemo(() => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const langCode = localeMap[(lang || 'en').toLowerCase()] || (lang || 'en').toUpperCase();
+        return `Daniel_Tarazona_${langCode}_${year}_${month}_${day}.pdf`;
+    }, [lang]);
+
+    const doc = <CVDocument data={data} labels={labels} theme={theme} lang={lang} />;
+
     return (
         <div className="h-full flex flex-col bg-[#0f0f1a]">
-            <div className="p-4 border-b border-white/5 bg-[#161625]">
-                <h2 className="text-lg font-semibold text-gray-200">
-                    📄 {labels.preview}
-                </h2>
-            </div>
-
-            <div className="flex-1 p-4 overflow-hidden">
-                <div className="h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                    <PDFViewer width="100%" height="100%" showToolbar={true}>
-                        <CVDocument data={data} labels={labels} theme={theme} />
-                    </PDFViewer>
-                </div>
-            </div>
+            <BlobProvider document={doc}>
+                {({ url, loading }) => (
+                    <>
+                        {/* Download bar */}
+                        <div className="flex items-center justify-end px-4 py-2 border-b border-white/10">
+                            {url && !loading && (
+                                <a
+                                    href={url}
+                                    download={fileName}
+                                    className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-lg transition-all"
+                                >
+                                    ⬇ Download
+                                </a>
+                            )}
+                        </div>
+                        {/* PDF viewer */}
+                        <div className="flex-1 p-4 overflow-hidden">
+                            <div className="h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                                {loading || !url ? (
+                                    <div className="h-full flex items-center justify-center text-gray-400 animate-pulse">
+                                        Rendering PDF…
+                                    </div>
+                                ) : (
+                                    <object
+                                        data={url}
+                                        type="application/pdf"
+                                        width="100%"
+                                        height="100%"
+                                        style={{ border: 'none' }}
+                                    >
+                                        <p className="p-4 text-gray-400">PDF preview not available — <a href={url} download={fileName} className="text-blue-400 underline">download instead</a>.</p>
+                                    </object>
+                                )}
+                            </div>
+                        </div>
+                    </>
+                )}
+            </BlobProvider>
         </div>
     );
 }
